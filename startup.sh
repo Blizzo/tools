@@ -73,3 +73,21 @@ echo "" >> info.txt
 #linux kernel hardening - /etc/sysctl.conf - ask buie/joe
 
 #disk quotas
+
+#finding all of the world-writeable files
+echo "All of the world-writable files" >> info.txt
+find /dir -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print >> info.txt
+echo "" >> info.txt
+
+#finding all of the no owner files
+echo "All of the no owner files" >> info.txt
+find /dir -xdev \( -nouser -o -nogroup \) -print
+echo "" >> info.txt
+
+
+
+
+
+
+
+
