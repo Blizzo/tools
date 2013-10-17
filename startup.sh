@@ -22,13 +22,13 @@ crontab -r
 #getting all the ip tables rules
 ./iptables.sh
 
-#set static ip address
+#set static ip address and do network interface config stuff
 netconfig="/etc/network/interfaces"
 
 cp $netconfig $netconfig.backup
 cat netconfig.txt > $netconfig
 
-#hosts
+#set hosts file location and do hosts file stuff
 hosts="/etc/hosts"
 
 cp $hosts $hosts.backup
@@ -40,7 +40,7 @@ chmod 600 $hosts
 #put the interface back up
 ifconfig up $1
 
-#upgradig everything
+#upgrading and updating everything
 apt-get update &
 apt-get upgrade -y &
 
@@ -69,3 +69,7 @@ echo "" >> $sshfile
 echo "All the ports that you're listing on" >> info.txt
 echo `lsof -nPi | grep -iF listen` >> info.txt
 echo "" >> info.txt
+
+#linux kernel hardening - /etc/sysctl.conf - ask buie/joe
+
+#disk quotas
