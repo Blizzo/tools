@@ -1,10 +1,16 @@
 #MAKE SURE ALL THE TXT FILES ARE CORRECT
 #BEFORE RUNNING THIS SCRIPT
+#Text files needed:
+#iptables.sh - will be a script containing the iptables rules you want
+#netconfig.txt - containing the interface config
+#hosts.txt - 
+####################################################################################
 
 #if not 1 param
 if [ $# -ne 1 ]
    then 
       set "eth0"
+      echo "expected name of main interface, but automatically assumed to be 'eth0'"
 fi
 
 #setting the net int down
