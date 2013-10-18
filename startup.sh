@@ -86,8 +86,8 @@ ifconfig up $1
 #ensure integrity of repos - /etc/apt/sources.list (debian only)
 
 #upgrading and updating everything
-$pkmgr update &
-$pkmgr upgrade -y &
+$pkmgr update & > .updateinfo.txt
+$pkmgr upgrade -y & > .upgradeinfo.txt
 
 #makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
 if [ ! -e /var/jail ]; then
@@ -104,7 +104,7 @@ echo `awk -F: '($3 == "0") {print}' /etc/passwd` >> $outfile
 echo "" >> $outfile
 
 #all listening ports
-echo "All the ports that you're listing on" >> $outfile
+echo "All the ports that you're listening on" >> $outfile
 echo `lsof -nPi | grep -iF listen` >> $outfile
 echo "" >> $outfile
 
