@@ -1,4 +1,4 @@
-#getting to drop all traffic
+#getting to drop all previous rules
 iptable -F
 
 # Drop all IPv6 stuff
