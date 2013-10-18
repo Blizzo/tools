@@ -9,7 +9,6 @@
 ####################################################################################
 #THINGS TO CHECK ######################################
 #if setting immutable flag to /boot and making it read only screws up box. if not, do dat in dis
-#remove sudoers/make it empty, chmod 000 and chattr +i
 
 #if not 1 param
 if [ $# -ne 1 ]
@@ -25,6 +24,14 @@ outfile=info.txt #set output file
 
 #cronjobs aka blowjob
 crontab -r
+mv /etc/crontab /etc/.crontab.bak
+mv /etc/anacrontab /etc/.anacrontab.bak
+
+#edit sudoers
+mv /etc/sudoers /etc/.sudoers.bak
+echo " " > /etc/sudoers
+chmod 000 /etc/sudoers
+chattr +i /etc/sudoers
 
 #calling iptables script to set all the ip tables rules
 ./iptables.sh &
@@ -76,6 +83,8 @@ chmod 600 $hosts
 #put the interface back up
 ifconfig up $1
 
+#ensure integrity of repos - /etc/apt/sources.list (debian only)
+
 #upgrading and updating everything
 $pkmgr update &
 $pkmgr upgrade -y &
@@ -93,10 +102,6 @@ fi
 echo "Accounts with UID = 0" >> $outfile
 echo `awk -F: '($3 == "0") {print}' /etc/passwd` >> $outfile
 echo "" >> $outfile
-
-#echo the sudoers file
-echo "What is in the sudoers file"
-cat /etc/sudoers >> $outfile
 
 #all listening ports
 echo "All the ports that you're listing on" >> $outfile
