@@ -9,6 +9,7 @@
 ####################################################################################
 #THINGS TO CHECK ######################################
 #if setting immutable flag to /boot and making it read only screws up box. if not, do dat in dis
+#remove sudoers/make it empty, chmod 000 and chattr +i
 
 #if not 1 param
 if [ $# -ne 1 ]
@@ -59,7 +60,7 @@ else
 	echo "no network config file given. interface may not be configured properly" >&2
 fi
 
-#set hosts file location and do hosts file stuff
+#set hosts file location and do hosts file securing
 hosts="/etc/hosts"
 
 cp $hosts $hosts.backup
