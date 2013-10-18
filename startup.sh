@@ -1,5 +1,7 @@
+#!/usr/bin/env bash
 #MAKE SURE ALL THE TXT FILES ARE CORRECT
 #BEFORE RUNNING THIS SCRIPT
+#must be run as root
 #Text files needed:
 #iptables.sh - will be a script containing the iptables rules you want
 #netconfig.txt - containing the interface config - must be changed to match network setup
@@ -26,11 +28,36 @@ crontab -r
 #calling iptables script to set all the ip tables rules
 ./iptables.sh &
 
-#set static ip address and do network interface config stuff
-netconfig="/etc/network/interfaces"
+#determine distro to get package manage and int config location
+if [ -f /etc/redhat-release ] ; then
+	pkmgr=`which yum`
+	sys_netconfig="/etc/sysconfig/network-scripts/ifcfg-$1"
+elif [ -f /etc/debian_version ] ; then
+	pkmgr=`which apt-get`
+	sys_netconfig="/etc/network/interfaces"
+elif [ -f /etc/gentoo_version ]; then #possible might need this too: -f /etc/gentoo-release
+	pkmgr=`which emerge`
+	ln -s /etc/init.d/net.lo /etc/init.d/net.$1 #create link so system recognizes net.lo file. needed for manual net config
+	sys_netconfig="/etc/conf.d/net"
+elif [ -f /etc/slackware-version ]; then
+	pkmgr=`which installpkg`
+	sys_netconfig="/etc/rc.d/rc.inet1.conf"
+else
+	echo "OS/distro not detected...using debian defaults..." >&2
+	pkmgr=`which apt-get` #if can't find OS, just use apt-get and hope for best
+	sys_netconfig="/etc/network/interfaces"
+fi
 
-cp $netconfig $netconfig.backup
-cat netconfig.txt > $netconfig
+#set static ip address and do network interface config stuff
+#sys_netconfig="/etc/network/interfaces"
+netconfig=netconfig.txt
+
+if [ -e $netconfig ]; then
+	cp $sys_netconfig $sys_netconfig.backup
+	cat $netconfig > $sys_netconfig
+else
+	echo "no network config file given. interface may not be configured properly" >&2
+fi
 
 #set hosts file location and do hosts file stuff
 hosts="/etc/hosts"
@@ -48,19 +75,7 @@ chmod 600 $hosts
 #put the interface back up
 ifconfig up $1
 
-#upgrading and updating everything. first determine package manager
-if [ -f /etc/redhat-release ] ; then
-	pkmgr=`which yum`
-elif [ -f /etc/debian_version ] ; then
-	pkmgr=`which apt-get`
-elif [ -f /etc/gentoo_version ]; then #possible might need this too: -f /etc/gentoo-release
-	pkmgr=`which emerge`
-elif [ -f /etc/slackware-version ]; then
-	pkmgr=`which installpkg`
-else
-	pkmgr=`which apt-get` #if can't find OS, just use apt-get and hope for best
-fi
-
+#upgrading and updating everything
 $pkmgr update &
 $pkmgr upgrade -y &
 
@@ -70,7 +85,7 @@ if [ ! -e /var/jail ]; then
 elif [ ! -e /var/jm_jail_5186 ]; then
 	./jail_maker.sh -s /var/jm_jail_5186 &
 else
-	echo "jail not made. must pick a new directory"
+	echo "jail not made. must pick a new directory" >&2
 fi
 
 #Make Sure No Non-Root Accounts Have UID Set To 0
