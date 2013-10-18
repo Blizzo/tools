@@ -86,8 +86,8 @@ ifconfig up $1
 #ensure integrity of repos - /etc/apt/sources.list (debian only)
 
 #upgrading and updating everything
-$pkmgr update & > .updateinfo.txt
-$pkmgr upgrade -y & > .upgradeinfo.txt
+$pkmgr update & disown > .updateinfo.txt
+$pkmgr upgrade -y & disown > .upgradeinfo.txt
 
 #makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
 if [ ! -e /var/jail ]; then
