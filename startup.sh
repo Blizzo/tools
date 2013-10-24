@@ -36,24 +36,52 @@ chattr +i /etc/sudoers
 #calling iptables script to set all the ip tables rules
 ./iptables.sh &
 
+function fix_repo {
+	if [ ! -e $2 ]; then
+		return 1
+	fi
+	if [ "$1" == "apt" ]; then
+		mv /etc/apt/sources.list /etc/apt/sources.list.bak
+		cp $2 /etc/apt/sources.list
+		chattr +i /etc/apt/sources.list
+		chattr +i /etc/apt
+	elif [ "$1" == "yum" ]; then
+		repos=`ls /etc/yum.repos.d`
+		for f in $repos; do
+			mv $f $f.bak
+		done
+		cp $2 /etc/yum.repos.d/default.repo
+		chattr +i /etc/yum.repos.d/default.repo
+		chattr +i /etc/yum.repos.d
+	elif [ "$1" == "emerge" ]; then
+		echo "$1 fix_repo feature not yet implemented"
+	fi
+}
+
 #determine distro to get package manage and int config location
 if [ -f /etc/redhat-release ] ; then
 	pkmgr=`which yum`
 	sys_netconfig="/etc/sysconfig/network-scripts/ifcfg-$1"
+	fix_repo yum repos.txt # do repo stuff
 elif [ -f /etc/debian_version ] ; then
 	pkmgr=`which apt-get`
 	sys_netconfig="/etc/network/interfaces"
+	fix_repo apt repos.txt # do repo stuff
 elif [ -f /etc/gentoo_version ]; then #possible might need this too: -f /etc/gentoo-release
 	pkmgr=`which emerge`
 	ln -s /etc/init.d/net.lo /etc/init.d/net.$1 #create link so system recognizes net.lo file. needed for manual net config
 	sys_netconfig="/etc/conf.d/net"
+	#still need to figure out
+	fix_repo emerge repos.txt # do repo stuff
 elif [ -f /etc/slackware-version ]; then
 	pkmgr=`which installpkg`
 	sys_netconfig="/etc/rc.d/rc.inet1.conf"
+	fix_repo apt repos.txt # do repo stuff
 else
 	echo "OS/distro not detected...using debian defaults..." >&2
 	pkmgr=`which apt-get` #if can't find OS, just use apt-get and hope for best
 	sys_netconfig="/etc/network/interfaces"
+	fix_repo apt repos.txt # do repo stuff
 fi
 
 #set static ip address and do network interface config stuff
@@ -76,14 +104,12 @@ echo "127.0.1.1       `hostname`" >> $hosts
 chattr +i $hosts
 chmod 600 $hosts
 
-#linux kernel hardening - /etc/sysctl.conf - ask buie/joe
+#linux kernel hardening - /etc/sysctl.conf - buie?
 
-#disk quotas
+#disk quotas - buie?
 
-#put the interface back up
+#put the interface back up ifconfig up $1
 ifconfig up $1
-
-#ensure integrity of repos - /etc/apt/sources.list (debian only)
 
 #upgrading and updating everything
 $pkmgr update & disown > .updateinfo.txt

