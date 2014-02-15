@@ -33,14 +33,14 @@ $path/iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 # Allow HTTP and HTTPS out
 $path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
 
-#Allow web server traffic in
-$path/iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+#Allow web server traffic in; only for webservers!
+#$path/iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
 
-#allow ssh in and out
+#allow ssh in and out; only if you have ssh!
 $path/iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 $path/iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
 
-#allow FTP server traffic - not sure if this works
+#allow FTP server traffic; only for ftp servers!
 $path/iptables -A INPUT -p tcp -m tcp --dport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
 $path/iptables -A OUTPUT -p tcp -m tcp --sport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
 $path/iptables -A INPUT -p tcp -m tcp --dport 20 -m state --state NEW,ESTABLISHED -j ACCEPT #active mode
@@ -48,7 +48,7 @@ $path/iptables -A OUTPUT -p tcp -m tcp --sport 20 -m state --state NEW,RELATED,E
 $path/iptables -A INPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT #passive
 $path/iptables -A OUTPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state NEW,ESTABLISHED -j ACCEPT #passive
 
-
+#smtp in/out rules; only for smtp servers!
 #iptables -A INPUT -p tcp -m tcp --dport 25 -j ACCEPT
 #iptables -A OUTPUT -p tcp -m tcp --dport 25 -j ACCEPT
 
@@ -63,5 +63,3 @@ $path/iptables -A INPUT -j DROP
 $path/iptables -A OUTPUT -j DROP
 $path/ip6tables -A INPUT -j DROP
 $path/ip6tables -A OUTPUT -j DROP
-
-
