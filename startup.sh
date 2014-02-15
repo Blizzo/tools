@@ -4,8 +4,9 @@
 #must be run as root
 #Text files needed:
 #iptables.sh - will be a script containing the iptables rules you want
-#netconfig.txt - containing the interface config - must be changed to match network setup
 #
+#parameters
+#first param $1 - name of interface
 ####################################################################################
 #THINGS TO CHECK ######################################
 #if setting immutable flag to /boot and making it read only screws up box. if not, do dat in dis
