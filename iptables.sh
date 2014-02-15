@@ -49,8 +49,8 @@ $path/iptables -A INPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m s
 $path/iptables -A OUTPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state ESTABLISHED -j ACCEPT #passive
 
 #allow smtp server traffic - not sure if this works
-iptables -A INPUT -p tcp -m tcp --dport 25 -j ACCEPT
-iptables -A OUTPUT -p tcp -m tcp --dport 25 -j ACCEPT
+#iptables -A INPUT -p tcp -m tcp --dport 25 -j ACCEPT
+#iptables -A OUTPUT -p tcp -m tcp --dport 25 -j ACCEPT
 
 # Log firewall hits
 $path/iptables -I INPUT -j LOG --log-level 7 --log-prefix "INv4 "
