@@ -35,6 +35,7 @@ chattr +i /etc/sudoers
 
 #calling iptables script to set all the ip tables rules
 ./iptables.sh &
+echo "`pwd`/iptables.sh " | cat /etc/rc.local > /etc/rc.local
 
 function fix_repo {
 	if [ ! -e $2 ]; then
@@ -84,16 +85,12 @@ else
 	fix_repo apt repos.txt # do repo stuff
 fi
 
-#set static ip address and do network interface config stuff
-#sys_netconfig="/etc/network/interfaces"
-netconfig=netconfig.txt
+#set static ip address, gateway and DNS
+ifconfig $1 <IP_ADDR> netmask <NET_MASK>
+route add default gw <GATEWAY_IP>
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver <TEAM_DNS_SRVR>" >> /etc/resolv.conf
 
-if [ -e $netconfig ]; then
-	cp $sys_netconfig $sys_netconfig.backup
-	cat $netconfig > $sys_netconfig
-else
-	echo "no network config file given. interface may not be configured properly" >&2
-fi
 
 #set hosts file location and do hosts file securing
 hosts="/etc/hosts"
