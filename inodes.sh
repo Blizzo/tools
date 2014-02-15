@@ -1,4 +1,4 @@
-PRFX=".";
+PRFX="/usr/sbin";
 FS="/";
 freeI=$(df -i "$FS"|awk '{print $4}'|tail -n1);
 
