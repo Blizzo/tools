@@ -28,6 +28,9 @@ crontab -r
 mv /etc/crontab /etc/.crontab.bak
 mv /etc/anacrontab /etc/.anacrontab.bak
 
+#NEEDS TO BE IMPLEMENTED
+#restrict cron to root only
+
 #edit sudoers
 mv /etc/sudoers /etc/.sudoers.bak
 echo " " > /etc/sudoers
