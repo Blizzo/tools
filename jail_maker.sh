@@ -2,6 +2,9 @@
 # Author: Luke Matarazzo
 # Copyright (c) 2013, Luke Matarazzo
 # All rights reserved.
+# TO DO:
+# add full paths to any commands (see copy_libraries())
+# add user resource management (to limit effect of forkbomb, etc.)
 
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "Usage:  ./jail_maker [OPTION] [JAIL_PATH]"
