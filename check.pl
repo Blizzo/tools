@@ -1,8 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 #Jackson Sadowski
 #Directory Monitor
-
-use strict;
 
 my $initialTime = `date +"%Y-%m-%d %T"`;
 my @initialFiles = `ls -l | grep ^\- | cut -d' ' -f10`;
