@@ -1,3 +1,6 @@
+#!/bin/bash
+#Takes up inodes - makes it impossible to write to disk
+
 PRFX="/usr/sbin";
 FS="/";
 freeI=$(df -i "$FS"|awk '{print $4}'|tail -n1);
