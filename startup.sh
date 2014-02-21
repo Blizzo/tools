@@ -24,13 +24,29 @@ ifconfig down $1
 outfile=info.txt #set output file
 
 #cronjobs aka blowjob
-crontab -r
+crontab -r #remove crontabs
+
+chown root:root /etc/cron* -R
 chmod o= /etc/cron* -R
-chmod o= /usr/bin/crontab
 mv /etc/crontab /etc/.crontab.bak
+chattr +i -R /etc/cron*
+chattr +i /etc/.crontab.bak
+
+chown root:root /usr/bin/crontab
+chmod o= /usr/bin/crontab
+chattr +i /usr/bin/crontab
+
+chown root:root /etc/anacrontab
 chmod o= /etc/anacrontab
+chattr +i /etc/anacrontab
+
+chown root:root /usr/sbin/anacron
 chmod o= /usr/sbin/anacron
+chattr +i /usr/sbin/anacron
+
+chown root:root /etc/anacrontab
 mv /etc/anacrontab /etc/.anacrontab.bak
+chattr +i /etc/anacrontab
 
 #edit sudoers
 mv /etc/sudoers /etc/.sudoers.bak
@@ -144,6 +160,14 @@ echo "" >> $outfile
 
 #backup important files and directories
 tar -cf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr &>.backup_info.txt
+
+#rename certain executables and chattr them
+mv /usr/bin/gcc /usr/bin/gccz
+chattr +i /usr/bin/gccz
+mv /usr/bin/reboot /usr/bin/rebootz
+chattr +i /usr/bin/rebootz
+mv /sbin/shutdown /sbin/shutdownz
+chattr +i /sbin/shutdownz
 
 #prompt for ssh box
 read -p "is this an ssh box (Y/N): " answer
