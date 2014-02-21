@@ -22,19 +22,19 @@ fi
 
 copy_libraries(){
 	# iggy ld-linux* file as it is not shared one
-	FILES="$(ldd $1 | awk '{ print $3 }' |egrep -v ^'\(')"
+	FILES="$(/usr/bin/ldd $1 | /bin/awk '{ print $3 }' | /bin/egrep -v ^'\(')"
 
 	#echo "Copying shared files/libs to $path..."
 	for i in $FILES
 	do
 		d="$(dirname $i)"
-		[ ! -d $path$d ] && mkdir -p $path$d || :
+		[ ! -d $path$d ] && /bin/mkdir -p $path$d || :
 		/bin/cp $i $path$d
 	done
 
 	# copy /lib/ld-linux* or /lib64/ld-linux* to $path/$sldlsubdir
 	# get ld-linux full file location 
-	sldl="$(ldd $1 | grep 'ld-linux' | awk '{ print $1}')"
+	sldl="$(/usr/bin/ldd $1 | /bin/grep 'ld-linux' | /bin/awk '{ print $1}')"
 	# now get sub-dir
 	sldlsubdir="$(dirname $sldl)"
 
@@ -66,39 +66,39 @@ if [ "$1" = "-s" -o "$1" = "--secure" ]; then
 	shift
 
 	#set up jail environment directories
-	mkdir -p $path
-	mkdir -p $path/{dev,etc,lib,usr,bin,home}
-	mkdir -p $path/usr/bin
+	/bin/mkdir -p $path
+	/bin/mkdir -p $path/{dev,etc,lib,usr,bin,home}
+	/bin/mkdir -p $path/usr/bin
 	user="none"
 	while [ true ]; do
 		read -p "Enter users to be placed in jail (leave blank if no more users): " user
 		if [ "$user" = "" ]; then
 			break;
 		fi
-		mkdir -p $path/home/$user
-		chmod 750 $path/home/$user
-		chown -f $user $path/home/$user
+		/bin/mkdir -p $path/home/$user
+		/bin/chmod 750 $path/home/$user
+		/bin/chown -f $user $path/home/$user
 	done
-	chown -f root.root $path
-	mknod -m 666 $path/dev/null c 1 3
+	/bin/chown -f root.root $path
+	/bin/mknod -m 666 $path/dev/null c 1 3
 
 	#copy over bare minimum files
-	cp /etc/ld.so.cache $path/etc
-	cp /etc/ld.so.conf $path/etc
-	cp /etc/nsswitch.conf $path/etc
-	cp /etc/hosts $path/etc
+	/bin/cp /etc/ld.so.cache $path/etc
+	/bin/cp /etc/ld.so.conf $path/etc
+	/bin/cp /etc/nsswitch.conf $path/etc
+	/bin/cp /etc/hosts $path/etc
 
 	#copy bare minimum executables
-	cp /bin/ls $path/bin
-	cp /bin/cat $path/bin
-	cp /bin/cp $path/bin
-	cp /bin/mv $path/bin
-	cp /bin/rm $path/bin
-	cp /bin/mkdir $path/bin
-	cp /bin/rmdir $path/bin
-	cp /bin/dir $path/bin
-	cp /bin/pwd $path/bin
-	cp /usr/bin/vi $path/usr/bin
+	/bin/cp /bin/ls $path/bin
+	/bin/cp /bin/cat $path/bin
+	/bin/cp /bin/cp $path/bin
+	/bin/cp /bin/mv $path/bin
+	/bin/cp /bin/rm $path/bin
+	/bin/cp /bin/mkdir $path/bin
+	/bin/cp /bin/rmdir $path/bin
+	/bin/cp /bin/dir $path/bin
+	/bin/cp /bin/pwd $path/bin
+	/bin/cp /usr/bin/vi $path/usr/bin
 
 	set "/bin/ls /bin/cat /bin/cp /bin/mv /bin/rm /bin/mkdir /bin/rmdir /bin/dir /bin/pwd /usr/bin/vi"
 
@@ -109,7 +109,7 @@ if [ "$1" = "-s" -o "$1" = "--secure" ]; then
 
 	if test -e $error_file; then
 		echo "Some libraries may not have copied properly"
-		rm $error_file
+		/bin/rm $error_file
 	fi
 fi
 
@@ -124,37 +124,37 @@ if [ "$#" -eq 0 ]; then
 	fi
 
 	#set up jail environment directories
-	mkdir -p $path
-	mkdir -p $path/{dev,etc,lib,usr,bin,home}
-	mkdir -p $path/usr/bin
+	/bin/mkdir -p $path
+	/bin/mkdir -p $path/{dev,etc,lib,usr,bin,home}
+	/bin/mkdir -p $path/usr/bin
 	user="none"
 	while [ true ]; do
 		read -p "Enter users to be placed in jail (leave blank if no more users): " user
 		if [ "$user" = "" ]; then
 			break;
 		fi
-		mkdir -p $path/home/$user
-		chmod 750 $path/home/$user
-		chown -f $user $path/home/$user
+		/bin/mkdir -p $path/home/$user
+		/bin/chmod 750 $path/home/$user
+		/bin/chown -f $user $path/home/$user
 	done
-	chown -f root.root $path
-	mknod -m 666 $path/dev/null c 1 3
+	/bin/chown -f root.root $path
+	/bin/mknod -m 666 $path/dev/null c 1 3
 
 	#copy over bare minimum files
-	cp /etc/ld.so.cache $path/etc
-	cp /etc/ld.so.conf $path/etc
-	cp /etc/nsswitch.conf $path/etc
-	cp /etc/hosts $path/etc
+	/bin/cp /etc/ld.so.cache $path/etc
+	/bin/cp /etc/ld.so.conf $path/etc
+	/bin/cp /etc/nsswitch.conf $path/etc
+	/bin/cp /etc/hosts $path/etc
 
 	#ask and copy executables
 	echo "Which executables would you like in your jail?"
-	common_bins=`ls /bin`
+	common_bins=`/bin/ls /bin`
 
 	for i in $common_bins; do
 		read -p "$i (Y/N):" choice
 		choice=`echo $choice | tr '[:lower:]' '[:upper:]'`
 		if [ "$choice" = "Y" -o "$choice" = "YES" ]; then
-			cp /bin/$i $path/bin
+			/bin/cp /bin/$i $path/bin
 			bins+="/bin/$i "
 		fi
 	done
@@ -168,7 +168,7 @@ if [ "$#" -eq 0 ]; then
 			read -p "$i (Y/N):" choice
 			choice=`echo $choice | tr '[:lower:]' '[:upper:]'`
 			if [ "$choice" = "Y" -o "$choice" = "YES" ]; then
-				cp /usr/bin/$i $path/usr/bin
+				/bin/cp /usr/bin/$i $path/usr/bin
 				bins+="/usr/bin/$i "
 			fi
 		done
@@ -183,6 +183,6 @@ if [ "$#" -eq 0 ]; then
 
 	if test -e $error_file; then
 		echo "Some libraries may not have copied properly"
-		rm $error_file
+		/bin/rm $error_file
 	fi
 fi
