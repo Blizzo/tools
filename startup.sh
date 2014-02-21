@@ -28,8 +28,9 @@ crontab -r
 mv /etc/crontab /etc/.crontab.bak
 mv /etc/anacrontab /etc/.anacrontab.bak
 
-#NEEDS TO BE IMPLEMENTED
 #restrict cron to root only
+chmod o= /etc/cron* -R
+chmod o= /usr/bin/crontab
 
 #edit sudoers
 mv /etc/sudoers /etc/.sudoers.bak
@@ -105,10 +106,6 @@ echo "127.0.1.1       `hostname`" >> $hosts
 chattr +i $hosts
 chmod 600 $hosts
 
-#linux kernel hardening - /etc/sysctl.conf - buie?
-
-#disk quotas - buie?
-
 #put the interface back up ifconfig up $1
 ifconfig up $1
 
@@ -144,6 +141,9 @@ echo "" >> $outfile
 echo "All of the no owner files" >> $outfile
 find / -xdev \( -nouser -o -nogroup \) -print >> $outfile
 echo "" >> $outfile
+
+#backup important files and directories
+tar -vcf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr
 
 #prompt for ssh box
 read -p "is this an ssh box (Y/N): " answer
