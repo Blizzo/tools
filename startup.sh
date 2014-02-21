@@ -25,12 +25,12 @@ outfile=info.txt #set output file
 
 #cronjobs aka blowjob
 crontab -r
-mv /etc/crontab /etc/.crontab.bak
-mv /etc/anacrontab /etc/.anacrontab.bak
-
-#restrict cron to root only
 chmod o= /etc/cron* -R
 chmod o= /usr/bin/crontab
+mv /etc/crontab /etc/.crontab.bak
+chmod o= /etc/anacrontab
+chmod o= /usr/sbin/anacron
+mv /etc/anacrontab /etc/.anacrontab.bak
 
 #edit sudoers
 mv /etc/sudoers /etc/.sudoers.bak
