@@ -110,8 +110,8 @@ chmod 600 $hosts
 ifconfig up $1
 
 #upgrading and updating everything
-$pkmgr update & disown > .updateinfo.txt
-$pkmgr upgrade -y & disown > .upgradeinfo.txt
+$pkmgr update & disown &> .updateinfo.txt
+$pkmgr upgrade -y & disown &> .upgradeinfo.txt
 
 #makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
 if [ ! -e /var/jail ]; then
@@ -143,7 +143,7 @@ find / -xdev \( -nouser -o -nogroup \) -print >> $outfile
 echo "" >> $outfile
 
 #backup important files and directories
-tar -vcf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr
+tar -cf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr &>.backup_info.txt
 
 #prompt for ssh box
 read -p "is this an ssh box (Y/N): " answer
