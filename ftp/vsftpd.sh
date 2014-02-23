@@ -17,7 +17,7 @@ sudo apt-get remove vsftp -y
 wget http://ftp.debian.org/debian/pool/main/v/vsftpd/vsftpd_3.0.2-3_i386.deb
  
 #backing up the old config file
-mv /etc/vsftpd.conf /etc/vsftpd.config.bak
+mv /etc/vsftpd.conf /etc/vsftpd.conf.bak
 
 #installing
 dpkg -i vsftpd_3.0.2-3_i386.deb
@@ -25,9 +25,11 @@ cp vsftpd3.conf /etc/vsftpd.conf
 
 #making a chroot
 cd /home
+
 mkdir $FTPUSER-jail
 chown $FTPUSER:$FTPUSER $FTPUSER-jail/
-chmod 555 $FTPUSER-jail/
+chmod 755 $FTPUSER-jail/
 
 #restarting
-service vsftpd restart
+service vsftpd stop
+service vsftpd start
