@@ -6,7 +6,7 @@
 read -p "Do you have FTP User(s)? (y/n): " ANS
 ANS=`echo $ANS | tr '[:lower:]' '[:upper:]'`
 if [ "$ANS" == "Y" ]; then
-   read -p "User's name: " FTPUSER
+   read -p "Enter user(s) name (separate each with a space): " FTPUSERS
 else
    echo "Please make a user FIRST!"
    exit
@@ -25,11 +25,13 @@ cp vsftpd3.conf /etc/vsftpd.conf
 
 #making a chroot for each user
 cd /home
-if test -e $FTPUSER; then
-   mkdir $FTPUSER
-   chown $FTPUSER:$FTPUSER $FTPUSER/
-   chmod 755 $FTPUSER/
-fi
+for FTPUSER in $FTPUSERS; do
+   if test -e $FTPUSER; then
+      mkdir $FTPUSER
+      chown $FTPUSER:$FTPUSER $FTPUSER/
+      chmod 755 $FTPUSER/
+   fi
+done
 
 #restarting
 service vsftpd stop
