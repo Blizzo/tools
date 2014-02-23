@@ -53,6 +53,20 @@ Include conf.d/
 Include sites-enabled/
 ServerSignature Off
 ServerTokens Prod
+TraceEnable Off
+FileETag None
+LimitRequestLine 4000
+MaxRequestsPerChild 10000
+LimitRequestFieldSize 4000
+LimitRequestFields 40
+LimitRequestBody 25000
+<Location />
+    Order allow,deny
+    Allow from all
+    <LimitExcept HEAD POST GET>
+        Deny from all
+    </LimitExcept>
+</Location>
 <Directory /var/www/hacker>
     Options -Indexes
 </Directory>
