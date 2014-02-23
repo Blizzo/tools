@@ -34,10 +34,11 @@ for line in $lines; do
 done &> /dev/null
 
 #destroy cron and anacron completely
+service crontab stop
 /bin/chown root:root /etc/cron* -R
 /bin/chmod o= /etc/cron* -R
 /bin/mv /etc/crontab /etc/.crontab.bak
-/usr/bin/chattr +i -R /etc/cron*
+#/usr/bin/chattr +i -R /etc/cron* installing some stuff needs this
 /usr/bin/chattr +i /etc/.crontab.bak
 
 /bin/chown root:root /usr/bin/crontab
