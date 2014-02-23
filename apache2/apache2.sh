@@ -1,4 +1,4 @@
-#!/usr/bin
+#!/bin/bash
 #apache2 statup script
 
 #stopping apache server
@@ -48,6 +48,9 @@ cd /etc/modsecurity/base_rules
 for f in * ; do ln -s /etc/modsecurity/base_rules/$f /etc/modsecurity/activated_rules/$f ; done
 cd /etc/modsecurity/optional_rules
 for f in * ; do ln -s /etc/modsecurity/optional_rules/$f /etc/modsecurity/activated_rules/$f ; done 
+
+#adding a php rule
+echo "expose_php = Off" >> /etc/php5/apache2/php.ini
 
 #restarting apache to enable
 service apache2 restart
