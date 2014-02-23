@@ -3,7 +3,7 @@
 #This works for vsftp and proftpd currently
 
 #Asking to see if they have a ftp user
-read -p "Do you have an FTP User? (y/n): " ANS
+read -p "Do you have FTP User(s)? (y/n): " ANS
 ANS=`echo $ANS | tr '[:lower:]' '[:upper:]'`
 if [ "$ANS" == "Y" ]; then
    read -p "User's name: " FTPUSER
@@ -33,5 +33,5 @@ fi
 
 #restarting
 service vsftpd stop
-ps -eo pid,command | grep "vsftpd" | grep -v grep | awk '{print $1}'
+kill `ps -eo pid,command | grep "vsftpd" | grep -v grep | awk '{print $1}'`
 service vsftpd start
