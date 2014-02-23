@@ -109,7 +109,6 @@ echo " " > /etc/sudoers
 
 #put the interface back up ifconfig up $1
 /sbin/ifconfig $1 up
-sleep 5
 
 #upgrading and updating everything
 $pkmgr update & disown &> .updateinfo.txt
