@@ -35,8 +35,9 @@ done
 
 #restarting
 service vsftpd stop
-kill `ps -eo pid,command | grep "vsftpd" | grep -v grep | awk '{print $1}'`
-service vsftpd start
+#kill `ps -eo pid,command | grep "vsftpd" | grep -v grep | awk '{print $1}'`
+echo "DONE! To start: service vsftpd start"
 
 #removing install file
+cd $OLDPWD
 rm vsftpd_3.0.2-3_i386.deb
