@@ -26,9 +26,9 @@ cp vsftpd3.conf /etc/vsftpd.conf
 #making a chroot
 cd /home
 
-mkdir $FTPUSER-jail
-chown $FTPUSER:$FTPUSER $FTPUSER-jail/
-chmod 755 $FTPUSER-jail/
+mkdir $FTPUSER
+chown $FTPUSER:$FTPUSER $FTPUSER/
+chmod 755 $FTPUSER/
 
 #restarting
 service vsftpd stop
