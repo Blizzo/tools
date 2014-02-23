@@ -5,12 +5,15 @@
 #must change root password first! must!
 #Text files needed:
 #iptables.sh - will be a script containing the iptables rules you want
-#
 #parameters
 #first param $1 - name of interface
 ####################################################################################
-#THINGS TO CHECK ######################################
-#if setting immutable flag to /boot and making it read only screws up box. if not, do dat in dis
+#MAKE SURE YOU SET YOUR IP ADDRESS, MASK, and GATEWAY
+#ALSO CHECK IPTABLES SCRIPT BEFORE RUNNING, OR YOUR LIFE WILL BE bad
+
+IP_ADDR=10.2.3.3
+NETMASK=255.255.255.240
+GATEWAY=10.2.3.0
 
 #if not 1 param
 if [ $# -ne 1 ]
@@ -24,12 +27,13 @@ fi
 
 outfile=info.txt #set output file
 
-#cronjobs aka blowjob
+#cronjobs aka blowjob - remove cron for all users
 lines=`/bin/cat /etc/passwd | grep -o '^\w*'`
 for line in $lines; do
         crontab -r -u $line
 done &> /dev/null
 
+#destroy cron and anacron completely
 /bin/chown root:root /etc/cron* -R
 /bin/chmod o= /etc/cron* -R
 /bin/mv /etc/crontab /etc/.crontab.bak
@@ -61,28 +65,29 @@ echo "`pwd`/iptables.sh " >> /etc/rc.local
 
 #determine distro to get package manage and int config location
 if [ -f /etc/redhat-release ] ; then
-	pkmgr=`/usr/bin/yum`
+	pkmgr='/usr/bin/yum'
 	#sys_netconfig="/etc/sysconfig/network-scripts/ifcfg-$1"
 elif [ -f /etc/debian_version ] ; then
-	pkmgr=`/usr/bin/apt-get`
+	pkmgr='/usr/bin/apt-get'
 	#sys_netconfig="/etc/network/interfaces"
 elif [ -f /etc/gentoo_version ]; then #possible might need this too: -f /etc/gentoo-release
-	pkmgr=`/usr/bin/emerge`
+	pkmgr='/usr/bin/emerge'
 	/bin/ln -s /etc/init.d/net.lo /etc/init.d/net.$1 #create link so system recognizes net.lo file. needed for manual net config
 	#sys_netconfig="/etc/conf.d/net"
 elif [ -f /etc/slackware-version ]; then
-	pkmgr=`/usr/bin/which installpkg`
+	pkmgr='/usr/bin/which installpkg'
 	#sys_netconfig="/etc/rc.d/rc.inet1.conf"
 else
 	echo "OS/distro not detected...using debian defaults..." >&2
-	pkmgr=`/usr/bin/apt-get` #if can't find OS, just use apt-get and hope for best
+	pkmgr='/usr/bin/apt-get' #if can't find OS, just use apt-get and hope for best
 	#sys_netconfig="/etc/network/interfaces"
 fi
 
 #set static ip address, gateway and DNS
-/sbin/ifconfig $1 <IP_ADDR> netmask <NET_MASK>
-/sbin/route add default gw <GATEWAY_IP>
+/sbin/ifconfig $1 $IP_ADDR netmask $NETMASK
+/sbin/route add default gw $GATEWAY
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.4.4" > /etc/resolv.conf
 #echo "nameserver <TEAM_DNS_SRVR>" >> /etc/resolv.conf
 
 #set hosts file location and do hosts file securing
