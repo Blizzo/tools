@@ -27,7 +27,7 @@ service apache2 restart
 #installing dependencies
 apt-get install libxml2 libxml2-dev libxml2-utils -y
 apt-get install libaprutil1 libaprutil1-dev -y
-
+apt-get install php5 -y
 #installing mod security
 apt-get install libapache-mod-security -y
 
