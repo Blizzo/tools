@@ -1,6 +1,9 @@
 #!/bin/bash
 #apache2 statup script
 
+#installing just in case it's not
+apt-get install apache2 -y
+
 #stopping apache server
 service apache2 stop
 
@@ -12,7 +15,7 @@ mv /etc/apache2/ports.conf /etc/apache2/ports.conf.bak
 mv `pwd`/conf /etc/apache2/apache2.conf
 
 #making the new ports.conf file
-echo "NameVirtualHost *:80" >> /etc/apache2/ports.conf
+echo "NameVirtualHost *:80" > /etc/apache2/ports.conf
 echo "Listen 80" >> /etc/apache2/ports.conf
 echo "<IfModule mod_ssl.c>" >> /etc/apache2/ports.conf
 echo "</IfModule>" >> /etc/apache2/ports.conf
@@ -23,11 +26,12 @@ echo "</IfModule>" >> /etc/apache2/ports.conf
 #restarting service
 service apache2 restart
 
-#MOD SECURITY SECTOIN
+#MOD SECURITY SECTION
 #installing dependencies
 apt-get install libxml2 libxml2-dev libxml2-utils -y
 apt-get install libaprutil1 libaprutil1-dev -y
 apt-get install php5 -y
+
 #installing mod security
 apt-get install libapache-mod-security -y
 
@@ -37,7 +41,7 @@ mv `pwd`/mod /etc/modsecurity/modsecurity.conf
 
 #installing OWASP Security measures
 wget -O SpiderLabs-owasp-modsecurity-crs.tar.gz https://github.com/SpiderLabs/owasp-modsecurity-crs/tarball/master
-tar -zxvf SpiderLabs-owasp-modsecurity-crs.tar.gz
+tar -zxf SpiderLabs-owasp-modsecurity-crs.tar.gz
 cp -R SpiderLabs-owasp-modsecurity-crs-*/* /etc/modsecurity/
 rm SpiderLabs-owasp-modsecurity-crs.tar.gz
 rm -R SpiderLabs-owasp-modsecurity-crs-*
