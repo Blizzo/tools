@@ -13,7 +13,7 @@ else
 fi
 
 #checking to see if vsftpd is installed
-sudo apt-get remove vsftp -y
+apt-get remove vsftp -y
 wget http://ftp.debian.org/debian/pool/main/v/vsftpd/vsftpd_3.0.2-3_i386.deb
  
 #backing up the old config file
