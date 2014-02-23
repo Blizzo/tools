@@ -23,13 +23,15 @@ mv /etc/vsftpd.conf /etc/vsftpd.conf.bak
 dpkg -i vsftpd_3.0.2-3_i386.deb
 cp vsftpd3.conf /etc/vsftpd.conf
 
-#making a chroot
+#making a chroot for each user
 cd /home
-
-mkdir $FTPUSER
-chown $FTPUSER:$FTPUSER $FTPUSER/
-chmod 755 $FTPUSER/
+if test -e $FTPUSER; then
+   mkdir $FTPUSER
+   chown $FTPUSER:$FTPUSER $FTPUSER/
+   chmod 755 $FTPUSER/
+fi
 
 #restarting
 service vsftpd stop
+ps -eo pid,command | grep "vsftpd" | grep -v grep | awk '{print $1}'
 service vsftpd start
