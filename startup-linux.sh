@@ -144,6 +144,7 @@ echo "All of the no owner files" >> $outfile
 echo "" >> $outfile
 
 #backup important files and directories
+echo "Backing up files...will take awhile"
 /bin/tar -cf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr &>.backup_info.txt
 
 #rename certain executables and chattr them
