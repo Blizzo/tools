@@ -22,6 +22,18 @@ if [ $# -ne 1 ]
       echo "expected name of main interface, but automatically assumed to be 'eth0'"
 fi
 
+def backup()
+{
+	mkdir /root/stuff
+	cd /root/stuff
+	dirs="boot bin sbin etc var root home lib usr"
+	for dir in $dirs; do
+		/bin/tar -cf $dir.tar /$dir
+		/bin/tar -rf ../notes.tar stuff/$dir.tar
+	done
+	#/bin/tar -cf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr &>.backup_info.txt
+}
+
 #setting the net int down
 /sbin/ifconfig $1 down
 
@@ -37,6 +49,7 @@ done &> /dev/null
 service cron stop
 service cups stop
 service samba stop
+service smbd
 service inetd stop
 
 #destroy cron and anacron completely
@@ -149,13 +162,12 @@ echo "All of the no owner files" >> $outfile
 echo "" >> $outfile
 
 #backup important files and directories
-echo "Backing up files...will take awhile"
-/bin/tar -cf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr &>.backup_info.txt
+backup &>.backup_info.txt &disown
 
 #rename certain executables and chattr them
 /bin/mv /usr/bin/gcc /usr/bin/gccz
 /usr/bin/chattr +i /usr/bin/gccz
-/bin/mv /usr/bin/reboot /usr/bin/rebootz
-/usr/bin/chattr +i /usr/bin/rebootz
+/bin/mv /sbin/reboot /sbin/rebootz
+/usr/bin/chattr +i /sbin/rebootz
 /bin/mv /sbin/shutdown /sbin/shutdownz
 /usr/bin/chattr +i /sbin/shutdownz
