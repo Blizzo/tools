@@ -33,8 +33,13 @@ for line in $lines; do
         crontab -r -u $line
 done &> /dev/null
 
+#stop usually unnecessary services
+service cron stop
+service cups stop
+service samba stop
+service inetd stop
+
 #destroy cron and anacron completely
-service crontab stop
 /bin/chown root:root /etc/cron* -R
 /bin/chmod o= /etc/cron* -R
 /bin/mv /etc/crontab /etc/.crontab.bak
