@@ -26,9 +26,9 @@ def backup()
 {
 	test -d /root/stuff || mkdir /root/stuff
 	cd /root/stuff
-	dirs="boot bin sbin etc var root home lib usr"
+	dirs="boot bin sbin etc var root home lib usr lib64"
 	for dir in $dirs; do
-		/bin/tar -cf $dir.tar /$dir
+		/bin/tar -cjf $dir.tar.bz /$dir
 		/bin/tar -rf ../notes.tar stuff/$dir.tar
 	done
 }
@@ -75,7 +75,7 @@ test -f /etc/rc.local && cp /etc/rc.local /etc/rc.local.bak
 echo "`pwd`/iptables.sh " >> /etc/rc.local
 
 #stop usually unnecessary services
-services="cron cups samba smbd inetd"
+services="cron cups samba smbd inetd portmap rsync rlogin"
 for service in $services; do
 	/usr/sbin/service $service stop
 	echo "/usr/sbin/service $service stop" >> /etc/rc.local
@@ -164,9 +164,9 @@ echo "" >> $outfile
 backup &>.backup_info.txt &disown
 
 #rename certain executables and chattr them
-/bin/mv /usr/bin/gcc /usr/bin/gccz
-/usr/bin/chattr +i /usr/bin/gccz
-/bin/mv /sbin/reboot /sbin/rebootz
-/usr/bin/chattr +i /sbin/rebootz
-/bin/mv /sbin/shutdown /sbin/shutdownz
-/usr/bin/chattr +i /sbin/shutdownz
+/bin/mv /usr/bin/gcc /usr/bin/zgcc
+/usr/bin/chattr +i /usr/bin/zgcc
+/bin/mv /sbin/reboot /sbin/zreboot
+/usr/bin/chattr +i /sbin/zreboot
+/bin/mv /sbin/shutdown /sbin/zshutdown
+/usr/bin/chattr +i /sbin/zshutdown
