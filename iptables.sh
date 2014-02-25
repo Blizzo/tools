@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #set path of iptables
 path=/sbin
+shitboxIP=10.0.0.0
+scoremaster=10.0.0.0
 
 #drop all previous rules
 $path/iptables -F
@@ -63,3 +65,15 @@ $path/iptables -A INPUT -j DROP
 $path/iptables -A OUTPUT -j DROP
 $path/ip6tables -A INPUT -j DROP
 $path/ip6tables -A OUTPUT -j DROP
+
+# $path/iptables -t nat -A PREROUTING -p tcp -j REDIRECT --to-destination $shitboxIP #Make all traffic go to the playground
+# $path/iptables -t nat -I PREROUTING -p tcp --from-destination $scoremaster -j ACCEPT #Accept all traffic from the scorebox
+
+
+# $path/iptables -t nat -A PREROUTING -p udp -j REDIRECT --to-destination $shitboxIP #Make all traffic go to the playground
+# $path/iptables -t nat -I PREROUTING -p udp --from-destination $scoremaster -j ACCEPT #Accept all traffic from the scorebox
+
+
+
+
+
