@@ -24,14 +24,13 @@ fi
 
 def backup()
 {
-	mkdir /root/stuff
+	test -d /root/stuff || mkdir /root/stuff
 	cd /root/stuff
 	dirs="boot bin sbin etc var root home lib usr"
 	for dir in $dirs; do
 		/bin/tar -cf $dir.tar /$dir
 		/bin/tar -rf ../notes.tar stuff/$dir.tar
 	done
-	#/bin/tar -cf /root/.notes.tar /boot /bin /sbin /etc /var /root /home /lib /usr &>.backup_info.txt
 }
 
 #setting the net int down
@@ -44,13 +43,6 @@ lines=`/bin/cat /etc/passwd | grep -o '^\w*'`
 for line in $lines; do
         crontab -r -u $line
 done &> /dev/null
-
-#stop usually unnecessary services
-service cron stop
-service cups stop
-service samba stop
-service smbd
-service inetd stop
 
 #destroy cron and anacron completely
 /bin/chown root:root /etc/cron* -R
@@ -78,9 +70,16 @@ service inetd stop
 
 #calling iptables script to set all the ip tables rules and add to startup
 ./iptables.sh &
-cp /etc/rc.local /etc/rc.local.bak
+test -f /etc/rc.local && cp /etc/rc.local /etc/rc.local.bak
 /bin/cat /etc/rc.local.bak > /etc/rc.local
 echo "`pwd`/iptables.sh " >> /etc/rc.local
+
+#stop usually unnecessary services
+services="cron cups samba smbd inetd"
+for service in $services; do
+	/usr/sbin/service $service stop
+	echo "/usr/sbin/service $service stop" >> /etc/rc.local
+done
 
 #determine distro to get package manage and int config location
 if [ -f /etc/redhat-release ] ; then
