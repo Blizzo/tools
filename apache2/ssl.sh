@@ -23,6 +23,7 @@ elif [ "$ANS" == "y" ]; then
    mv `pwd`/default /etc/apache2/sites-available/default-ssl
    a2ensite default-ssl
    service apache2 reload
+   echo "Remember to edit the default-ssl config file!"
    exit
 
 #if a wrong selection
