@@ -29,7 +29,7 @@ def backup()
 	dirs="boot bin sbin etc var root home lib usr lib64"
 	for dir in $dirs; do
 		/bin/tar -cjf $dir.tar.bz /$dir
-		/bin/tar -rf ../notes.tar stuff/$dir.tar
+		/bin/tar -rf ../notes.tar stuff/$dir.tar.bz
 	done
 }
 
