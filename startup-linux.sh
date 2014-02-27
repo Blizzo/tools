@@ -141,9 +141,9 @@ $pkmgr upgrade -y & disown &> .upgradeinfo.txt
 
 #makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
 if [ ! -e /var/jail ]; then
-	./jail_maker.sh -s /var/jail &
+	./jail_maker.sh -s /var/jail &disown
 elif [ ! -e /var/jm_jail_5186 ]; then
-	./jail_maker.sh -s /var/jm_jail_5186 &
+	./jail_maker.sh -s /var/jm_jail_5186 &disown
 else
 	echo "jail not made. must pick a new directory" >&2
 fi
