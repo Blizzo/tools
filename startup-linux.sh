@@ -14,6 +14,7 @@
 IP_ADDR=10.2.3.3
 NETMASK=255.255.255.240
 GATEWAY=10.2.3.0
+TEAM_DNS_SRV=10.2.3.1
 
 #if not 1 param
 if [ $# -ne 1 ]
@@ -70,7 +71,7 @@ done &> /dev/null
 
 #calling iptables script to set all the ip tables rules and add to startup
 ./iptables.sh &
-test -f /etc/rc.local && cp /etc/rc.local /etc/rc.local.bak && /bin/cat /etc/rc.local.bak > /etc/rc.local
+/bin/cp /etc/rc.local /etc/rc.local
 echo "`pwd`/iptables.sh " >> /etc/rc.local
 
 #stop usually unnecessary services
@@ -104,8 +105,8 @@ fi
 /sbin/ifconfig $1 $IP_ADDR netmask $NETMASK
 /sbin/route add default gw $GATEWAY
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
-echo "nameserver 8.8.4.4" > /etc/resolv.conf
-#echo "nameserver <TEAM_DNS_SRVR>" >> /etc/resolv.conf
+echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+#echo "nameserver $TEAM_DNS_SRV" >> /etc/resolv.conf
 
 #set hosts file location and do hosts file securing
 hosts="/etc/hosts"
@@ -114,12 +115,14 @@ hosts="/etc/hosts"
 /bin/cp $hosts $hosts.backup
 echo "127.0.0.1       localhost" > $hosts
 echo "127.0.1.1       `hostname`" >> $hosts
-/usr/bin/chattr +i $hosts
+/bin/chown root:root $hosts
 /bin/chmod 600 $hosts
+/usr/bin/chattr +i $hosts
 
 #edit sudoers
 /bin/mv /etc/sudoers /etc/.sudoers.bak
 echo " " > /etc/sudoers
+/bin/chown root:root /etc/sudoers
 /bin/chmod 000 /etc/sudoers
 /usr/bin/chattr +i /etc/sudoers
 
