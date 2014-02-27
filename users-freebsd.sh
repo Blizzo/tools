@@ -2,12 +2,16 @@
 #edit users - change password for all users and disable other accounts
 
 read -s -p "Enter password for all non-privileged users: " pass
+echo
 read -s -p "Enter password again: " pass_two
+echo
 
 while [ "$pass" != "$pass_two" ]; do
 	echo "Passwords did not match. Try again."
 	read -s -p "Enter password for all non-privileged users: " pass
+	echo
 	read -s -p "Enter password again: " pass_two
+	echo
 done
 
 for user in $(awk -F":" '{if($3>=500) print $1}' /etc/passwd); do
