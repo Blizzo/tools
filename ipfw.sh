@@ -37,4 +37,5 @@ $path/ipfw -q add deny tcp from any to any 0 in setup keep-state #limit OS detec
 $path/ipfw -q add deny udp from any to any 0 in keep-state #limit OS detection
 
 #block the rest
+$path/ipfw -q add deny ip6 from  any to any #block all ipv6
 $path/ipfw -q add deny log all from any to any #block the rest
