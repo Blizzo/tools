@@ -121,8 +121,13 @@ if [ "$#" -eq 0 ]; then
 
 	#set up jail environment directories
 	/bin/mkdir -p $path
-	/bin/mkdir -p $path/{dev,etc,lib,libexec,usr,bin,home}
+	/bin/mkdir -p $path/{dev,etc,lib,libexec,usr,bin,home,var,tmp}
+	/bin/mkdir -p $path/var/tmp
+	/bin/mkdir -p $path/tmp/vi.recover
+	/usr/sbin/chown 777 $path/tmp/vi.recover
+	/bin/ln -s $path/tmp $path/var/tmp
 	/bin/mkdir -p $path/usr/bin
+	/bin/mkdir -p $path/usr/share/misc
 	user="none"
 	while [ true ]; do
 		read -p "Enter users to be placed in jail (leave blank if no more users): " user
@@ -130,14 +135,18 @@ if [ "$#" -eq 0 ]; then
 			break;
 		fi
 		/bin/mkdir -p $path/home/$user
-		/bin/chmod 750 $path/home/$user
-		/usr/sbin/chown -f $user $path/home/$user
+		/bin/cp /home/$user/.* $path/home/$user &> /dev/null
+		# /usr/sbin/chown -f -R $user:wheel $path/home/$user/.*
+		/bin/chmod -R 750 $path/home/$user
+		/usr/sbin/chown -f -R $user $path/home/$user
 	done
 	/usr/sbin/chown -f root:wheel $path
 	/sbin/mknod $path/dev/null c 1 3
 
 	#copy over bare minimum files
-	/bin/cp /libexec/ld-elf.so.1 $path/libexec/ld-elf.so.1
+	/bin/cp /libexec/ld-elf.so.1 $path/libexec
+	/bin/cp /etc/termcap.small $path/etc
+	/bin/cp /usr/share/misc/termcap $path/usr/share/misc
 	/bin/cp /etc/nsswitch.conf $path/etc
 	/bin/cp /etc/hosts $path/etc
 
