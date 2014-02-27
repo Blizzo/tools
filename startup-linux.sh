@@ -74,7 +74,7 @@ test -f /etc/rc.local && cp /etc/rc.local /etc/rc.local.bak && /bin/cat /etc/rc.
 echo "`pwd`/iptables.sh " >> /etc/rc.local
 
 #stop usually unnecessary services
-services="cron cups samba smbd inetd portmap rsync rlogin"
+services="cron crond cups samba smbd inetd portmap rsync rlogin"
 for service in $services; do
 	/usr/sbin/service $service stop
 	echo "/usr/sbin/service $service stop" >> /etc/rc.local
