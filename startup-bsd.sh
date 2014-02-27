@@ -34,9 +34,9 @@ def backup()
 outfile=info.txt #set output file
 
 #cronjobs aka blowjob - remove cron for all users
-lines=`/bin/cat /etc/passwd | grep -o '^\w*'`
-for line in $lines; do
-        crontab -r -u $line
+users=`/bin/cat /etc/passwd | grep -o '^\w*'`
+for user in $users; do
+        crontab -r -u $user
 done &> /dev/null
 
 #destroy cron and anacron completely
@@ -65,6 +65,8 @@ if [ test -e "/etc/anacrontab" ]; then
 fi
 
 #handle filez
+/bin/chmod ugo= /usr/bin/rlogin
+/bin/chmod ugo= /usr/bin/rsh
 /bin/chmod o= /usr/bin/at
 /bin/chmod o= /usr/bin/atq
 /bin/chmod o= /usr/bin/atrm
@@ -133,6 +135,12 @@ echo "127.0.0.1       localhost" > $hosts
 /bin/chmod 600 $hosts
 /bin/chflags schg $hosts
 
+#remove all users but root from wheel group
+users=`/bin/cat /etc/passwd | grep -o '^\w*'`
+for user in $users; do
+        pw groupmod wheel -d $user
+done &> /dev/null
+
 #edit sudoers
 if [ test -e "/usr/local/etc/sudoers" ]; then
 	/bin/mv /usr/local/etc/sudoers /usr/local/etc/.sudoers.bak
@@ -150,9 +158,6 @@ fi
 
 #make chrooted jail for ssh
 
-#######################################################################################################################################
-# TEST 	THIS	OUT 	ON 	FREEBSD 	FIRST
-#######################################################################################################################################
 
 #Make Sure No Non-Root Accounts Have UID Set To 0
 echo "Accounts with UID = 0" >> $outfile
@@ -161,18 +166,12 @@ echo "" >> $outfile
 
 #all listening ports
 echo "All the ports that you're listening on" >> $outfile
-echo `/usr/bin/lsof -nPi | /bin/grep -iF listen` >> $outfile
+echo `/usr/bin/netstat -na | /usr/bin/grep -iF listen` >> $outfile
 echo "" >> $outfile
 
 #finding all of the world-writeable files
 echo "All of the world-writable files" >> $outfile
-/usr/bin/find / -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print >> $outfile
-echo "" >> $outfile
-
-#finding all of the no owner files
-echo "All of the no owner files" >> $outfile
-/usr/bin/find / -xdev \( -nouser -o -nogroup \) -print >> $outfile
-echo "" >> $outfile
+echo `/usr/bin/find / -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print` >> $outfile &disown
 
 #backup important files and directories
 backup &>.backup_info.txt &disown

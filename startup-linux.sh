@@ -40,9 +40,9 @@ def backup()
 outfile=info.txt #set output file
 
 #cronjobs aka blowjob - remove cron for all users
-lines=`/bin/cat /etc/passwd | grep -o '^\w*'`
-for line in $lines; do
-        crontab -r -u $line
+users=`/bin/cat /etc/passwd | grep -o '^\w*'`
+for user in $users; do
+        crontab -r -u $user
 done &> /dev/null
 
 #destroy cron and anacron completely
@@ -119,6 +119,12 @@ echo "127.0.1.1       `hostname`" >> $hosts
 /bin/chmod 600 $hosts
 /usr/bin/chattr +i $hosts
 
+#remove all users from the root group except for root. and some services possibly
+users=`/bin/cat /etc/passwd | grep -o '^\w*'`
+for user in $users; do
+        usermod -R root $user
+done &> /dev/null
+
 #edit sudoers
 /bin/mv /etc/sudoers /etc/.sudoers.bak
 echo " " > /etc/sudoers
@@ -154,13 +160,13 @@ echo "" >> $outfile
 
 #finding all of the world-writeable files
 echo "All of the world-writable files" >> $outfile
-/usr/bin/find / -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print >> $outfile
-echo "" >> $outfile
+echo `/usr/bin/find / -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print` >> $outfile &disown
+#echo "" >> $outfile
 
-#finding all of the no owner files
-echo "All of the no owner files" >> $outfile
-/usr/bin/find / -xdev \( -nouser -o -nogroup \) -print >> $outfile
-echo "" >> $outfile
+# #finding all of the no owner files
+# echo "All of the no owner files" >> $outfile
+# /usr/bin/find / -xdev \( -nouser -o -nogroup \) -print >> $outfile
+# echo "" >> $outfile
 
 #backup important files and directories
 backup &>.backup_info.txt &disown
