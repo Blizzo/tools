@@ -76,6 +76,10 @@ $path/ip6tables -A OUTPUT -j DROP
 # $path/iptables -t nat -A POSTROUTING -d $shitboxIP -p udp -j MASQUERADE
 # $path/iptables -t nat -I PREROUTING -p udp -s $scoremaster -j ACCEPT #Accept all traffic from the scorebox
 
-
-
+#$path/iptables -I INPUT -d $shitboxIP -j ACCEPT
+#$path/iptables -I FORWARD -d $shitboxIP -j ACCEPT
+#$path/iptables -I OUTPUT -d $shitboxIP -j ACCEPT
+#$path/iptables -I INPUT -s $shitboxIP -j ACCEPT
+#$path/iptables -I FORWARD -s $shitboxIP -j ACCEPT
+#$path/iptables -I OUTPUT -s $shitboxIP -j ACCEPT
 
