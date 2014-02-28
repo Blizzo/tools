@@ -66,13 +66,15 @@ $path/iptables -A OUTPUT -j DROP
 $path/ip6tables -A INPUT -j DROP
 $path/ip6tables -A OUTPUT -j DROP
 
-# $path/iptables -t nat -A PREROUTING -p tcp -j REDIRECT --to-destination $shitboxIP #Make all traffic go to the playground
-# $path/iptables -t nat -I PREROUTING -p tcp --from-destination $scoremaster -j ACCEPT #Accept all traffic from the scorebox
+# INSTATE THESE RULES ON HOST TO PROTECT
 
+# $path/iptables -t nat -A PREROUTING -p tcp -j DNAT --to-destination $shitboxIP #Make all traffic go to the playground
+# $path/iptables -t nat -A POSTROUTING -d $shitboxIP -p tcp -j MASQUERADE
+# $path/iptables -t nat -I PREROUTING -p tcp -s $scoremaster -j ACCEPT #Accept all traffic from the scorebox
 
-# $path/iptables -t nat -A PREROUTING -p udp -j REDIRECT --to-destination $shitboxIP #Make all traffic go to the playground
-# $path/iptables -t nat -I PREROUTING -p udp --from-destination $scoremaster -j ACCEPT #Accept all traffic from the scorebox
-
+# $path/iptables -t nat -A PREROUTING -p udp -j DNAT --to-destination $shitboxIP #Make all traffic go to the playground
+# $path/iptables -t nat -A POSTROUTING -d $shitboxIP -p udp -j MASQUERADE
+# $path/iptables -t nat -I PREROUTING -p udp -s $scoremaster -j ACCEPT #Accept all traffic from the scorebox
 
 
 
