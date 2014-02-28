@@ -68,6 +68,11 @@ $path/ip6tables -A OUTPUT -j DROP
 
 # INSTATE THESE RULES ON HOST TO PROTECT
 
+# NOTE: vsftpd needs pasv_promiscuous=yes for "fake" ftp
+
+# echo "1" > /proc/sys/net/ipv4/ip_forward
+# $path/iptables -D INPUT -j DROP
+# $path/iptables -D OUTPUT -j DROP
 # $path/iptables -t nat -A PREROUTING -p tcp -j DNAT --to-destination $shitboxIP #Make all traffic go to the playground
 # $path/iptables -t nat -A POSTROUTING -d $shitboxIP -p tcp -j MASQUERADE
 # $path/iptables -t nat -I PREROUTING -p tcp -s $scoremaster -j ACCEPT #Accept all traffic from the scorebox
