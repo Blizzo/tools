@@ -77,8 +77,8 @@ echo "`pwd`/iptables.sh " > /etc/rc.local
 #stop usually unnecessary services
 services="cron crond cups samba smbd inetd portmap rsync rlogin"
 for service in $services; do
-	/usr/sbin/service $service stop
-	echo "/usr/sbin/service $service stop" >> /etc/rc.local
+	/usr/bin/env service $service stop
+	echo "/usr/bin/env service $service stop" >> /etc/rc.local
 done
 
 #determine distro to get package manage and int config location
