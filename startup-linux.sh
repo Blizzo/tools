@@ -71,8 +71,8 @@ done &> /dev/null
 
 #calling iptables script to set all the ip tables rules and add to startup
 ./iptables.sh &
-/bin/cp /etc/rc.local /etc/rc.local
-echo "`pwd`/iptables.sh " >> /etc/rc.local
+test -e /etc/rc.local && /bin/cp /etc/rc.local /etc/rc.local
+echo "`pwd`/iptables.sh " > /etc/rc.local
 
 #stop usually unnecessary services
 services="cron crond cups samba smbd inetd portmap rsync rlogin"
