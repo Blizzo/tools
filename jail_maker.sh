@@ -22,7 +22,7 @@ fi
 
 copy_libraries(){
 	# iggy ld-linux* file as it is not shared one
-	FILES="$(/usr/bin/ldd $1 | /bin/awk '{ print $3 }' | /bin/egrep -v ^'\(')"
+	FILES="$(ldd $1 | awk '{ print $3 }' | egrep -v ^'\(')"
 
 	#echo "Copying shared files/libs to $path..."
 	for i in $FILES
@@ -34,7 +34,7 @@ copy_libraries(){
 
 	# copy /lib/ld-linux* or /lib64/ld-linux* to $path/$sldlsubdir
 	# get ld-linux full file location 
-	sldl="$(/usr/bin/ldd $1 | /bin/grep 'ld-linux' | /bin/awk '{ print $1}')"
+	sldl="$(ldd $1 | grep 'ld-linux' | awk '{ print $1}')"
 	# now get sub-dir
 	sldlsubdir="$(dirname $sldl)"
 
