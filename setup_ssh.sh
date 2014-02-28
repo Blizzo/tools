@@ -26,6 +26,8 @@ echo "UsePAM yes" >> $sshd_config
 echo "PermitRootLogin no" >> $sshd_config
 echo "PermitEmptyPasswords no" >> $sshd_config
 echo "LogLevel INFO" >> $sshd_config
+echo "#AllowUsers sshuser1 sshuser2 sshuser3" >> $sshd_config you can use this line after you know the users
+echo "#AllowGroups sshusers" >> $sshd_config #use after you have users in a group
 
 #chroot users home directory
 echo "ChrootDirectory /var/jail" >> $sshd_config #set up chroot dir
