@@ -75,6 +75,8 @@ if [ "$1" = "-s" -o "$1" = "--secure" ]; then
 		if [ "$user" = "" ]; then
 			break;
 		fi
+		groupadd sshusers
+		/usr/sbin/usermod -g sshusers $user
 		/bin/mkdir -p $path/home/$user
 		/bin/chmod 750 $path/home/$user
 		/bin/chown -f $user $path/home/$user

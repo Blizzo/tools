@@ -138,15 +138,6 @@ echo " " > /etc/sudoers
 #upgrading and updating everything
 bash -c "$pkmgr update -y && $pkmgr upgrade -y" &>.updateinfo.txt &disown
 
-#makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
-if [ ! -e /var/jail ]; then
-	./jail_maker.sh -s /var/jail &disown
-elif [ ! -e /var/jm_jail_5186 ]; then
-	./jail_maker.sh -s /var/jm_jail_5186 &disown
-else
-	echo "jail not made. must pick a new directory" >&2
-fi
-
 #Make Sure No Non-Root Accounts Have UID Set To 0
 echo "Accounts with UID = 0" >> $outfile
 echo `/usr/bin/awk -F: '($3 == "0") {print}' /etc/passwd` >> $outfile
@@ -177,3 +168,12 @@ backup &>.backup_info.txt &disown
 /usr/bin/chattr +i /sbin/zreboot
 /bin/mv /sbin/shutdown /sbin/zshutdown
 /usr/bin/chattr +i /sbin/zshutdown
+
+#makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
+if [ ! -e /var/jail ]; then
+	./jail_maker.sh -s /var/jail
+elif [ ! -e /var/jm_jail_5186 ]; then
+	./jail_maker.sh -s /var/jm_jail_5186
+else
+	echo "jail not made. must pick a new directory" >&2
+fi
