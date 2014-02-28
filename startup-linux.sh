@@ -11,27 +11,27 @@
 #MAKE SURE YOU SET YOUR IP ADDRESS, MASK, and GATEWAY
 #ALSO CHECK IPTABLES SCRIPT BEFORE RUNNING, OR YOUR LIFE WILL BE bad
 
-IP_ADDR=10.2.3.3
-NETMASK=255.255.255.240
-GATEWAY=10.2.3.0
+IP_ADDR=10.150.100.20
+NETMASK=255.255.254.0
+GATEWAY=10.150.100.254
 TEAM_DNS_SRV=10.2.3.1
 
 #if not 1 param
 if [ $# -ne 1 ]
-   then 
+   then
       set "eth0"
       echo "expected name of main interface, but automatically assumed to be 'eth0'"
 fi
 
-def backup()
+backup()
 {
-	test -d /root/stuff || mkdir /root/stuff
-	cd /root/stuff
-	dirs="boot bin sbin etc var root home lib usr lib64"
-	for dir in $dirs; do
-		/bin/tar -cjf $dir.tar.bz /$dir
-		/bin/tar -rf ../notes.tar stuff/$dir.tar.bz
-	done
+        test -d /root/stuff || mkdir /root/stuff
+        cd /root/stuff
+        dirs="boot bin sbin etc var root home lib usr lib64"
+        for dir in $dirs; do
+                /bin/tar -cjf $dir.tar.bz /$dir
+                /bin/tar -rf ../notes.tar $dir.tar.bz
+        done
 }
 
 #setting the net int down
@@ -136,8 +136,8 @@ echo " " > /etc/sudoers
 /sbin/ifconfig $1 up
 
 #upgrading and updating everything
-$pkmgr update & disown &> .updateinfo.txt
-$pkmgr upgrade -y & disown &> .upgradeinfo.txt
+$pkmgr update &> .updateinfo.txt &disown
+$pkmgr upgrade -y &> .upgradeinfo.txt &disown
 
 #makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
 if [ ! -e /var/jail ]; then
