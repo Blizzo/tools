@@ -14,12 +14,13 @@ fi
 
 #checking to see if vsftpd is installed
 apt-get remove vsftp -y
-wget http://ftp.debian.org/debian/pool/main/v/vsftpd/vsftpd_3.0.2-3_i386.deb
- 
-#backing up the old config file
+wget -q http://ftp.debian.org/debian/pool/main/v/vsftpd/vsftpd_3.0.2-3_i386.deb
+echo "Finished downloading..."
+
+#backing up the old config file (if there is one)
 mv /etc/vsftpd.conf /etc/vsftpd.conf.bak
 
-#installing
+#installing and moving custom configuration in
 dpkg -i vsftpd_3.0.2-3_i386.deb
 cp vsftpd3.conf /etc/vsftpd.conf
 
@@ -35,8 +36,8 @@ done
 
 #restarting
 service vsftpd stop
-#kill `ps -eo pid,command | grep "vsftpd" | grep -v grep | awk '{print $1}'`
-echo "DONE! To start: service vsftpd start"
+service vsftpd start
+echo "DONE! Finished installing vsftpd"
 
 #removing install file
 cd $OLDPWD
