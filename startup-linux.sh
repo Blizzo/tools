@@ -136,8 +136,8 @@ echo " " > /etc/sudoers
 /sbin/ifconfig $1 up
 
 #upgrading and updating everything
-$pkmgr update &> .updateinfo.txt &disown
-$pkmgr upgrade -y &> .upgradeinfo.txt &disown
+$pkmgr update -y && $pkmgr upgrade -y &> .updateinfo.txt &disown
+#$pkmgr upgrade -y &> .upgradeinfo.txt &disown
 
 #makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
 if [ ! -e /var/jail ]; then
