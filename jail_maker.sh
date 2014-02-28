@@ -90,6 +90,7 @@ if [ "$1" = "-s" -o "$1" = "--secure" ]; then
 
 	#copy bare minimum executables
 	/bin/cp /bin/ls $path/bin
+	/bin/cp /bin/bash $path/bin
 	/bin/cp /bin/cat $path/bin
 	/bin/cp /bin/cp $path/bin
 	/bin/cp /bin/mv $path/bin
@@ -100,7 +101,7 @@ if [ "$1" = "-s" -o "$1" = "--secure" ]; then
 	/bin/cp /bin/pwd $path/bin
 	/bin/cp /usr/bin/vi $path/usr/bin
 
-	set "/bin/ls /bin/cat /bin/cp /bin/mv /bin/rm /bin/mkdir /bin/rmdir /bin/dir /bin/pwd /usr/bin/vi"
+	set "/bin/ls /bin/cat /bin/bash /bin/cp /bin/mv /bin/rm /bin/mkdir /bin/rmdir /bin/dir /bin/pwd /usr/bin/vi"
 
 	#copy appropriate libraries
 	for exec in $@; do

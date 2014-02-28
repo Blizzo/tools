@@ -30,7 +30,10 @@ echo "#AllowUsers sshuser1 sshuser2 sshuser3" >> $sshd_config you can use this l
 echo "#AllowGroups sshusers" >> $sshd_config #use after you have users in a group
 
 #chroot users home directory
-echo "ChrootDirectory /var/jail" >> $sshd_config #set up chroot dir
+echo "Match group sshusers" >> $sshd_config
+echo "	ChrootDirectory /var/jail" >> $sshd_config #set up chroot dir
+echo "	X11Forwarding no" >> $sshd_config
+echo "	AllowTcpForwarding no" >> $sshd_config
 echo "AllowTcpForwarding no" >> $sshd_config
 
 service sshd start
