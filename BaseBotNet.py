@@ -12,7 +12,7 @@ import platform
 import os
 
 #IRC Settings
-server = "irc.partydome.us" #if you use freenode, bad things will happen.
+server = "10.2.2.50" #if you use freenode, bad things will happen.
 channel = "#ists"
 botnick = "WhiteTeam"
 
