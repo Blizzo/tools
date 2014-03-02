@@ -7,6 +7,19 @@ scoremaster=10.0.0.0
 #drop all previous rules
 $path/iptables -F
 
+#VOIP - needed on electrode for asterisk/voip server!
+# SIP on UDP port 5060. Other SIP servers may need TCP port 5060 as well
+$path/iptables -A INPUT -p udp -m udp --dport 5060 -j ACCEPT
+$path/iptables -A INPUT -p udp -m udp --dport 4569 -j ACCEPT # IAX2- the IAX protocol
+$path/iptables -A INPUT -p udp -m udp --dport 5036 -j ACCEPT # IAX - most have switched to IAX v2, or ought to
+ # RTP - the media stream
+$path/iptables -A INPUT -p udp -m udp --dport 10000:20000 -j ACCEPT # (related to the port range in /etc/asterisk/rtp.conf)
+$path/iptables -A INPUT -p udp -m udp --dport 2727 -j ACCEPT # MGCP - if you use media gateway control protocol in your configuration
+
+# Allow HTTP and HTTPS in and out
+$path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+$path/iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+
 #block typical bad stuff
 $path/iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP #null packets
 $path/iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP #syn-flood packets
@@ -32,15 +45,9 @@ $path/iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 #$path/iptables -A INPUT -p udp -m multiport --sports 67,68 -j ACCEPT
 #$path/iptables -A OUTPUT -p udp -m multiport --dports 67,68 -j ACCEPT
 
-# Allow HTTP and HTTPS out
-$path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
-
-#Allow web server traffic in; only for webservers!
-#$path/iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
-
 #allow ssh in and out; only if you have ssh!
-$path/iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
-$path/iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
+#$path/iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+#$path/iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
 
 #allow FTP server traffic; only for ftp servers!
 $path/iptables -A INPUT -p tcp -m tcp --dport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
@@ -66,8 +73,8 @@ $path/iptables -A OUTPUT -j DROP
 $path/ip6tables -A INPUT -j DROP
 $path/ip6tables -A OUTPUT -j DROP
 
-# INSTATE THESE RULES ON HOST TO PROTECT
 
+# INSTATE THESE RULES ON HOST TO PROTECT
 # NOTE: vsftpd needs pasv_promiscuous=yes for "fake" ftp
 
 # echo "1" > /proc/sys/net/ipv4/ip_forward
