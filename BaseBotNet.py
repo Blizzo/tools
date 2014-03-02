@@ -14,7 +14,7 @@ import os
 #IRC Settings
 server = "irc.partydome.us" #if you use freenode, bad things will happen.
 channel = "#ists"
-botnick = "Dizzo"
+botnick = "WhiteTeam"
 
 def readCommand(args): #used for testing
 	command = args[3][1:]
