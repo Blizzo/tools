@@ -9,12 +9,12 @@ $path/iptables -F
 
 #VOIP - needed on electrode for asterisk/voip server!
 # SIP on UDP port 5060. Other SIP servers may need TCP port 5060 as well
-$path/iptables -A INPUT -p udp -m udp --dport 5060 -j ACCEPT
-$path/iptables -A INPUT -p udp -m udp --dport 4569 -j ACCEPT # IAX2- the IAX protocol
-$path/iptables -A INPUT -p udp -m udp --dport 5036 -j ACCEPT # IAX - most have switched to IAX v2, or ought to
+#$path/iptables -A INPUT -p udp -m udp --dport 5060 -j ACCEPT
+#$path/iptables -A INPUT -p udp -m udp --dport 4569 -j ACCEPT # IAX2- the IAX protocol
+#$path/iptables -A INPUT -p udp -m udp --dport 5036 -j ACCEPT # IAX - most have switched to IAX v2, or ought to
  # RTP - the media stream
-$path/iptables -A INPUT -p udp -m udp --dport 10000:20000 -j ACCEPT # (related to the port range in /etc/asterisk/rtp.conf)
-$path/iptables -A INPUT -p udp -m udp --dport 2727 -j ACCEPT # MGCP - if you use media gateway control protocol in your configuration
+#$path/iptables -A INPUT -p udp -m udp --dport 10000:20000 -j ACCEPT # (related to the port range in /etc/asterisk/rtp.conf)
+#$path/iptables -A INPUT -p udp -m udp --dport 2727 -j ACCEPT # MGCP - if you use media gateway control protocol in your configuration
 
 # Allow HTTP and HTTPS in and out
 $path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
