@@ -1,24 +1,12 @@
 #!/usr/bin/env bash
 #set path of iptables
 path=/sbin
-shitboxIP=10.0.0.0
-scoremaster=10.0.0.0
+#shitboxIP=10.0.0.0
+#scoremaster=10.0.0.0
 
 #drop all previous rules
 $path/iptables -F
-
-#VOIP - needed on electrode for asterisk/voip server!
-# SIP on UDP port 5060. Other SIP servers may need TCP port 5060 as well
-#$path/iptables -A INPUT -p udp -m udp --dport 5060 -j ACCEPT
-#$path/iptables -A INPUT -p udp -m udp --dport 4569 -j ACCEPT # IAX2- the IAX protocol
-#$path/iptables -A INPUT -p udp -m udp --dport 5036 -j ACCEPT # IAX - most have switched to IAX v2, or ought to
- # RTP - the media stream
-#$path/iptables -A INPUT -p udp -m udp --dport 10000:20000 -j ACCEPT # (related to the port range in /etc/asterisk/rtp.conf)
-#$path/iptables -A INPUT -p udp -m udp --dport 2727 -j ACCEPT # MGCP - if you use media gateway control protocol in your configuration
-
-# Allow HTTP and HTTPS in and out
-$path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
-$path/iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+$path/ip6tables -F
 
 #block typical bad stuff
 $path/iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP #null packets
@@ -39,14 +27,30 @@ $path/iptables -A OUTPUT -p icmp --icmp-type 8 -j ACCEPT
 # Allow established TCP connections to re-enter
 $path/iptables -A INPUT -m state --state ESTABLISHED -j ACCEPT
 
-# Allow DNS and #DHCP
+# Allow HTTP and HTTPS in and out for server and client
+$path/iptables -A OUTPUT -p tcp -m multiport --sports 80,443 -j ACCEPT #server outbound
+$path/iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT #server inbound
+$path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT #client outbound
+#$path/iptables -A INPUT -p tcp -m multiport --sports 80,443 -j ACCEPT #client inbound - shouldn't need as long as you allow established tcp connections back in
+
+# Allow DNS queries as a client
 $path/iptables -A INPUT -p udp --sport 53 -j ACCEPT
 $path/iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+
+#allow DNS queries as a server
+#$path/iptables -A INPUT -p udp --dport 53 -j ACCEPT
+#$path/iptables -A OUTPUT -p udp --sport 53 -j ACCEPT
+
+#allow DHCP - TODO: make one set for client and one for server
 #$path/iptables -A INPUT -p udp -m multiport --sports 67,68 -j ACCEPT
 #$path/iptables -A OUTPUT -p udp -m multiport --dports 67,68 -j ACCEPT
 
-#allow ssh in and out; only if you have ssh!
+#allow ssh in and out for a server
 #$path/iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+#$path/iptables -A OUTPUT -p tcp -m tcp --sport 22 -j ACCEPT
+
+#allow ssh out for a client
+#$path/iptables -A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
 #$path/iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
 
 #allow FTP server traffic; only for ftp servers!
@@ -59,7 +63,18 @@ $path/iptables -A OUTPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m 
 
 #smtp in/out rules; only for smtp servers!
 #iptables -A INPUT -p tcp -m tcp --dport 25 -j ACCEPT
-#iptables -A OUTPUT -p tcp -m tcp --dport 25 -j ACCEPT
+#iptables -A OUTPUT -p tcp -m tcp --sport 25 -j ACCEPT
+
+#TODO, rules for POP
+
+#VOIP - needed for asterisk/voip server!
+# SIP on UDP port 5060. Other SIP servers may need TCP port 5060 as well
+#$path/iptables -A INPUT -p udp -m udp --dport 5060 -j ACCEPT
+#$path/iptables -A INPUT -p udp -m udp --dport 4569 -j ACCEPT # IAX2- the IAX protocol
+#$path/iptables -A INPUT -p udp -m udp --dport 5036 -j ACCEPT # IAX - most have switched to IAX v2, or ought to
+ # RTP - the media stream
+#$path/iptables -A INPUT -p udp -m udp --dport 10000:20000 -j ACCEPT # (related to the port range in /etc/asterisk/rtp.conf)
+#$path/iptables -A INPUT -p udp -m udp --dport 2727 -j ACCEPT # MGCP - if you use media gateway control protocol in your configuration
 
 # Log firewall hits
 $path/iptables -I INPUT -j LOG --log-level 7 --log-prefix "INv4 "
@@ -73,8 +88,9 @@ $path/iptables -A OUTPUT -j DROP
 $path/ip6tables -A INPUT -j DROP
 $path/ip6tables -A OUTPUT -j DROP
 
-
 # INSTATE THESE RULES ON HOST TO PROTECT
+# This will reroute non-scoring engine traffic to a honeypot and allow the traffic to be routed back from
+# that honeypot to the original sender.
 # NOTE: vsftpd needs pasv_promiscuous=yes for "fake" ftp
 
 # echo "1" > /proc/sys/net/ipv4/ip_forward
