@@ -33,17 +33,31 @@ $path/iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT #server in
 $path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT #client outbound
 #$path/iptables -A INPUT -p tcp -m multiport --sports 80,443 -j ACCEPT #client inbound - shouldn't need as long as you allow established tcp connections back in
 
+# Allow MySQL queries as a client
+#$path/iptables -A INPUT -p tcp -m tcp --sport 3306 -j ACCEPT
+#$path/iptables -A OUTPUT -p tcp -m tcp --dport 3306 -j ACCEPT
+
+# Allow MySQL queries as a server
+#$path/iptables -A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
+#$path/iptables -A OUPUT -p tcp -m tcp --sport 3306 -j ACCEPT
+
 # Allow DNS queries as a client
 $path/iptables -A INPUT -p udp --sport 53 -j ACCEPT
-$path/iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+$path/iptables -A INPUT -p udp --sport 53 -j ACCEPT #needed for large zone transfers
+$path/iptables -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
 
 #allow DNS queries as a server
 #$path/iptables -A INPUT -p udp --dport 53 -j ACCEPT
 #$path/iptables -A OUTPUT -p udp --sport 53 -j ACCEPT
+#$path/iptables -A OUTPUT -p tcp -m tcp --sport 53 -j ACCEPT
 
-#allow DHCP - TODO: make one set for client and one for server
-#$path/iptables -A INPUT -p udp -m multiport --sports 67,68 -j ACCEPT
-#$path/iptables -A OUTPUT -p udp -m multiport --dports 67,68 -j ACCEPT
+# Allow DHCP client traffic
+#$path/iptables -A INPUT -p udp --dports 68 -j ACCEPT
+#$path/iptables -A OUTPUT -p udp --sports 68 -j ACCEPT
+
+# Allow DHCP server traffic
+#$path/iptables -A INPUT -p udp --dports 67 -j ACCEPT
+#$path/iptables -A OUTPUT -p udp --sports 67 -j ACCEPT
 
 #allow ssh in and out for a server
 #$path/iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
@@ -62,10 +76,15 @@ $path/iptables -A INPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m s
 $path/iptables -A OUTPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state NEW,ESTABLISHED -j ACCEPT #passive
 
 #smtp in/out rules; only for smtp servers!
-#iptables -A INPUT -p tcp -m tcp --dport 25 -j ACCEPT
-#iptables -A OUTPUT -p tcp -m tcp --sport 25 -j ACCEPT
+#$path/iptables -A INPUT -p tcp -m tcp --dport 25 -j ACCEPT
+#$path/iptables -A OUTPUT -p tcp -m tcp --sport 25 -j ACCEPT
 
-#TODO, rules for POP
+#allow opsview agent in/out to specific IP address (if using monitoring service)
+#monServer=127.0.0.1 #<-replace with IP of monitoring server
+#$path/iptables -A INPUT -p tcp -s $monServer --dport 5666 -j ACCEPT
+#$path/iptables -A OUTPUT -p tcp -d $monServer --sport 5666 -j ACCEPT
+
+#TODO, rules for POP and/or IMAP
 
 #VOIP - needed for asterisk/voip server!
 # SIP on UDP port 5060. Other SIP servers may need TCP port 5060 as well
