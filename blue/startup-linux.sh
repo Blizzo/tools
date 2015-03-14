@@ -11,11 +11,6 @@
 #MAKE SURE YOU SET YOUR IP ADDRESS, MASK, and GATEWAY
 #ALSO CHECK IPTABLES SCRIPT BEFORE RUNNING, OR YOUR LIFE WILL BE bad
 
-####################################################################################
-# add code to find and remove suid/sgid bits for things that shouldn't have it
-# also add this to look for suid `find / -type f \( -perm -04000 -o -perm -02000 \)`
-####################################################################################
-
 IP_ADDR=10.150.100.20
 NETMASK=255.255.254.0
 GATEWAY=10.150.100.254
@@ -43,6 +38,9 @@ backup()
 /sbin/ifconfig $1 down
 
 outfile=info.txt #set output file
+
+#backup important files and directories and fork before starting everything else
+backup &>.backup_info.txt &disown
 
 #cronjobs aka blowjob - remove cron for all users
 users=`/bin/cat /etc/passwd | grep -o '^\w*'`
@@ -132,7 +130,7 @@ done &> /dev/null
 
 #edit sudoers
 /bin/mv /etc/sudoers /etc/.sudoers.bak
-echo " " > /etc/sudoers
+echo > /etc/sudoers
 /bin/chown root:root /etc/sudoers
 /bin/chmod 000 /etc/sudoers
 /usr/bin/chattr +i /etc/sudoers
@@ -146,25 +144,32 @@ bash -c "$pkmgr update -y && $pkmgr upgrade -y" &>.updateinfo.txt &disown
 #Make Sure No Non-Root Accounts Have UID Set To 0
 echo "Accounts with UID = 0" >> $outfile
 echo `/usr/bin/awk -F: '($3 == "0") {print}' /etc/passwd` >> $outfile
-echo "" >> $outfile
+echo >> $outfile
 
 #all listening ports
 echo "All the ports that you're listening on" >> $outfile
 echo `/usr/bin/lsof -nPi | /bin/grep -iF listen` >> $outfile
-echo "" >> $outfile
+echo >> $outfile
 
 #finding all of the world-writeable files
 echo "All of the world-writable files" >> $outfile
 echo `/usr/bin/find / -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print` >> $outfile &disown
-#echo "" >> $outfile
+echo >> $outfile
+
+#find all suid bit files and remove suid bit if it seems like the binary doesn't need it
+#is not tested, needs more binaries to be added to the check in the if statement!
+badFiles=`/usr/bin/find / -type f \( -perm -04000 -o -perm -02000 \)`
+for file in $badFiles; do
+	if [ "`/bin/grep -iP '.*passwd.*|su|ping|.*mount.*|crontab'`" = "" ]; then
+		/bin/chmod u-s "$file"
+		echo "got rid of suid bit on '$file'" >> $outfile
+	fi
+done
 
 # #finding all of the no owner files
 # echo "All of the no owner files" >> $outfile
 # /usr/bin/find / -xdev \( -nouser -o -nogroup \) -print >> $outfile
 # echo "" >> $outfile
-
-#backup important files and directories
-backup &>.backup_info.txt &disown
 
 #rename certain executables and chattr them
 /bin/mv /usr/bin/gcc /usr/bin/zgcc
@@ -177,8 +182,8 @@ backup &>.backup_info.txt &disown
 #makes the jail. if /var/jail taken, somewhat random directory attempted to be made in hopes it doesn't exist
 if [ ! -e /var/jail ]; then
 	./jail_maker.sh -s /var/jail
-elif [ ! -e /var/jm_jail_5186 ]; then
-	./jail_maker.sh -s /var/jm_jail_5186
 else
-	echo "jail not made. must pick a new directory" >&2
+	let first="$RANDOM % 100"
+	let second="$RANDOM % 100"
+	./jail_maker.sh -s /var/jail_${first}-${second}
 fi
