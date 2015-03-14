@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#Randomly rename binaries
+#Rename binaries to random strings
 
 $binaryDir = 'rundir/binaries';
 @chars = (a..z, A..Z, 0..9);
