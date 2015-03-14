@@ -11,6 +11,11 @@
 #MAKE SURE YOU SET YOUR IP ADDRESS, MASK, and GATEWAY
 #ALSO CHECK IPTABLES SCRIPT BEFORE RUNNING, OR YOUR LIFE WILL BE bad
 
+####################################################################################
+# add code to find and remove suid/sgid bits for things that shouldn't have it
+# also add this to look for suid `find / -type f \( -perm -04000 -o -perm -02000 \)`
+####################################################################################
+
 IP_ADDR=10.150.100.20
 NETMASK=255.255.254.0
 GATEWAY=10.150.100.254
