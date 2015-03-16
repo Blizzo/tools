@@ -157,9 +157,6 @@ def binswap(rename=0):
 			print "backing up failed. exiting..."
 			return(backupThread.exitcode)
 
-	print newDict
-	return 0
-
 	#shuffle/rename the binaries!
 	shuffleThread = Process(target=shuffle, args=(oldKeys, oldDict, newDict,))
 	shuffleThread.start()
