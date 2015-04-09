@@ -10,9 +10,9 @@ fi
 
 #make sure history file exists and whatnot
 histFile="$HOME/.${shell}_history"
-if [ ! -e "$histFile" ]; then
+if [ ! -e "$HISTFILE" ]; then
     histFile="$HOME/.history"
-    if [ ! -e "$histFile" ]; then
+    if [ ! -e "$HISTFILE" ]; then
         echo "couldn't find history file :("
         exit -1
     fi
@@ -20,9 +20,9 @@ fi
 
 #roulette forever!
 while true; do
-    lines="$(wc -l "$histFile" | awk '{print $1}')"
+    lines="$(wc -l "$HISTFILE" | awk '{print $1}')"
     rand="$(($RANDOM % $lines))"
-    cmd="$(sed "${rand}q;d" "$histFile")"
+    cmd="$(sed "${rand}q;d" "$HISTFILE")"
     echo "$cmd"
     $cmd
 
