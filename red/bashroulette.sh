@@ -18,7 +18,7 @@ if [ ! -e "$histFile" ]; then
     fi
 fi
 
-
+#roulette forever!
 while true; do
     lines="$(wc -l "$histFile" | awk '{print $1}')"
     rand="$(($RANDOM % $lines))"
