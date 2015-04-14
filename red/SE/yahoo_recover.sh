@@ -1,4 +1,6 @@
 #!/bin/bash
+#Checks Yahoo e-mail for recovery questions
+
 #username array
 USERNAME=(cheetahdragon14@yahoo.com)
 
