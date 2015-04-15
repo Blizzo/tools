@@ -2,7 +2,7 @@
 #Checks Yahoo e-mail for recovery questions
 
 #username array
-USERNAME=(cheetahdragon14@yahoo.com)
+USERNAME=(user@yahoo.com)
 
 for i in "${USERNAME[@]}"
 do
