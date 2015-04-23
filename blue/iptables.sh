@@ -43,13 +43,15 @@ $path/iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -j ACCEPT #client o
 
 # Allow DNS queries as a client
 $path/iptables -A INPUT -p udp --sport 53 -j ACCEPT
-$path/iptables -A INPUT -p udp --sport 53 -j ACCEPT #needed for large zone transfers
-$path/iptables -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
+$path/iptables -A INPUT -p tcp --sport 53 -j ACCEPT #needed for large zone transfers
+$path/iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+$path/iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT #needed for large zone transfers
 
 #allow DNS queries as a server
 #$path/iptables -A INPUT -p udp --dport 53 -j ACCEPT
+#$path/iptables -A INPUT -p tcp --dport 53 -j ACCEPT #needed for large zone transfers
 #$path/iptables -A OUTPUT -p udp --sport 53 -j ACCEPT
-#$path/iptables -A OUTPUT -p tcp -m tcp --sport 53 -j ACCEPT
+#$path/iptables -A OUTPUT -p tcp -m tcp --sport 53 -j ACCEPT #needed for large zone transfers
 
 # Allow DHCP client traffic
 #$path/iptables -A INPUT -p udp --dports 68 -j ACCEPT
