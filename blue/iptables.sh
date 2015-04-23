@@ -98,10 +98,10 @@ $path/iptables -A OUTPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m 
 #$path/iptables -A INPUT -p udp -m udp --dport 2727 -j ACCEPT # MGCP - if you use media gateway control protocol in your configuration
 
 # Log firewall hits
-$path/iptables -I INPUT -j LOG --log-level 7 --log-prefix "INv4 "
-$path/iptables -I OUTPUT -j LOG --log-level 7 --log-prefix "OUTv4 "
-$path/ip6tables -I INPUT -j LOG --log-level 7 --log-prefix "INv6 "
-$path/ip6tables -I OUTPUT -j LOG --log-level 7 --log-prefix "OUTv6 "
+$path/iptables -A INPUT -m limit --limit 15/min -j LOG --log-level 4 --log-prefix "INv4 "
+$path/iptables -A OUTPUT -m limit --limit 15/min -j LOG --log-level 4 --log-prefix "OUTv4 "
+$path/ip6tables -A INPUT -m limit --limit 3/min -j LOG --log-level 4 --log-prefix "INv6 "
+$path/ip6tables -A OUTPUT -m limit --limit 3/min -j LOG --log-level 4 --log-prefix "OUTv6 "
 
 # Drop all other stuff
 $path/iptables -A INPUT -j DROP
