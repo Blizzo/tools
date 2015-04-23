@@ -54,12 +54,12 @@ $path/iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT #needed for large zone tran
 #$path/iptables -A OUTPUT -p tcp -m tcp --sport 53 -j ACCEPT #needed for large zone transfers
 
 # Allow DHCP client traffic
-#$path/iptables -A INPUT -p udp --dports 68 -j ACCEPT
-#$path/iptables -A OUTPUT -p udp --sports 68 -j ACCEPT
+#$path/iptables -A INPUT -p udp --dport 68 -j ACCEPT
+#$path/iptables -A OUTPUT -p udp --sport 68 -j ACCEPT
 
 # Allow DHCP server traffic
-#$path/iptables -A INPUT -p udp --dports 67 -j ACCEPT
-#$path/iptables -A OUTPUT -p udp --sports 67 -j ACCEPT
+#$path/iptables -A INPUT -p udp --dport 67 -j ACCEPT
+#$path/iptables -A OUTPUT -p udp --sport 67 -j ACCEPT
 
 #allow ssh in and out for a server
 #$path/iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
