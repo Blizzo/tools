@@ -66,8 +66,8 @@ $path/iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT #needed for large zone tran
 #$path/iptables -A OUTPUT -p tcp -m tcp --sport 22 -j ACCEPT
 
 #allow ssh out for a client
-#$path/iptables -A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
-#$path/iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
+$path/iptables -A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
+$path/iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
 
 #allow FTP server traffic; only for ftp servers!
 $path/iptables -A INPUT -p tcp -m tcp --dport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
