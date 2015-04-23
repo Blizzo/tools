@@ -70,12 +70,12 @@ $path/iptables -A INPUT -p tcp -m tcp --sport 22 -j ACCEPT
 $path/iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT
 
 #allow FTP server traffic; only for ftp servers!
-$path/iptables -A INPUT -p tcp -m tcp --dport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
-$path/iptables -A OUTPUT -p tcp -m tcp --sport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
-$path/iptables -A INPUT -p tcp -m tcp --dport 20 -m state --state NEW,ESTABLISHED -j ACCEPT #active mode
-$path/iptables -A OUTPUT -p tcp -m tcp --sport 20 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT #active mode
-$path/iptables -A INPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT #passive
-$path/iptables -A OUTPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state NEW,ESTABLISHED -j ACCEPT #passive
+#$path/iptables -A INPUT -p tcp -m tcp --dport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
+#$path/iptables -A OUTPUT -p tcp -m tcp --sport 21 -m state --state NEW,ESTABLISHED -j ACCEPT #initial connection
+#$path/iptables -A INPUT -p tcp -m tcp --dport 20 -m state --state NEW,ESTABLISHED -j ACCEPT #active mode
+#$path/iptables -A OUTPUT -p tcp -m tcp --sport 20 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT #active mode
+#$path/iptables -A INPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT #passive
+#$path/iptables -A OUTPUT -p tcp -m tcp --sport 1024:65535 --dport 1024:65535 -m state --state NEW,ESTABLISHED -j ACCEPT #passive
 
 #smtp in/out rules; only for smtp servers!
 #$path/iptables -A INPUT -p tcp -m tcp --dport 25 -j ACCEPT
